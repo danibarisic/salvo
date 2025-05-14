@@ -1,10 +1,10 @@
-package com.example.practice;
+package com.codeoftheweb.salvo;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PracticeApplicationTests {
+class SalvoApplicationTests {
 
 	@Test
 	void contextLoads() {

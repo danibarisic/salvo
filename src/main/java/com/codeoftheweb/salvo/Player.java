@@ -11,6 +11,15 @@ public class Player {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   private String userName;
+  private String email;
+
+  public Player() {
+  }
+
+  public Player(String userName, String email) {
+    this.userName = userName;
+    this.email = email;
+  }
 
   public String getUserName() {
     return userName;
@@ -20,7 +29,11 @@ public class Player {
     this.userName = userName;
   }
 
-  public Player(String userName, String email) {
-    this.userName = email;
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 }
