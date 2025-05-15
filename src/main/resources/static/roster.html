@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Saldo</title>
+    <link rel="stylesheet" href="roster.css">
+</head>
+
+<body>
+    <div class="roster-container">
+        <div id="box">
+            <h1>Player Roster</h1>
+            <input id="text-input" type="text" placeholder="Enter new player">
+            <button id="button">Add</button>
+            <ul id="player-list">
+
+            </ul>
+        </div>
+    </div>
+    <script>
+        const button = document.getElementById("button");
+        button.addEventListener("click", () => {
+            const newPlayer = document.getElementById("text-input").value;
+            const list = document.getElementById("player-list");
+            const li = document.createElement("li");
+            list.appendChild(li).textContent = newPlayer;
+        });
+
+        const loadPlayers = async () => {
+            try {
+                const response = await fetch("http://localhost:8080/players");
+                const data = await response.json();
+                const players = data._embedded?.players || [];
+
+                const list = document.getElementById("player-list");
+
+                players.forEach(player => {
+                    const li = document.createElement("li");
+                    li.textContent = player.email;
+                    list.appendChild(li);
+                });
+            }
+            catch (error) {
+                console.error("Failed to load players:", error);
+            }
+        }
+        window.onload = loadPlayers;
+    </script>
+</body>
+
+</html>
