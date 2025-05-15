@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 @Entity
 public class Player {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String userName;
   private String email;
@@ -19,6 +19,14 @@ public class Player {
   public Player(String userName, String email) {
     this.userName = userName;
     this.email = email;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getUserName() {
