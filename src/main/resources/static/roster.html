@@ -17,32 +17,55 @@
         </div>
     </div>
     <script>
-        const button = document.getElementById("button");
-        button.addEventListener("click", () => {
-            const newPlayer = document.getElementById("text-input").value;
-            const list = document.getElementById("player-list");
-            const li = document.createElement("li");
-            list.appendChild(li).textContent = newPlayer;
-        });
-
         const loadPlayers = async () => {
             try {
+                //Fetches the initial list from database.
                 const response = await fetch("http://localhost:8080/players");
                 const data = await response.json();
                 const players = data._embedded?.players || [];
 
                 const list = document.getElementById("player-list");
+                list.innerHTML = "";
 
                 players.forEach(player => {
                     const li = document.createElement("li");
-                    li.textContent = player.email;
+                    li.textContent = player.userName || player.email;
                     list.appendChild(li);
                 });
-            }
-            catch (error) {
+            } catch (error) {
                 console.error("Failed to load players:", error);
             }
-        }
+        };
+        const button = document.getElementById("button");
+
+        //Adds typed player name to list and database.
+        button.addEventListener("click", async () => {
+            const newPlayer = document.getElementById("text-input").value;
+            if (!newPlayer) return;
+
+            const list = document.getElementById("player-list");
+            const li = document.createElement("li");
+            li.textContent = newPlayer;
+            list.appendChild(li);
+            document.getElementById("text-input").value = "";
+
+            try {
+                const response = await fetch("http://localhost:8080/players", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userName: newPlayer, email: newPlayer })
+                });
+                if (response.ok) {
+                    // Reload the player list from server
+                    await loadPlayers();
+                } else {
+                    console.error("Failed to add player:", response);
+                }
+            } catch (error) {
+                console.error("Failed to load players:", error);
+            }
+        });
+
         window.onload = loadPlayers;
     </script>
 </body>
