@@ -1,5 +1,6 @@
 package com.codeoftheweb.salvo;
 
+import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SalvoApplication implements CommandLineRunner {
 	@Autowired
 	private PlayerRepository playerRepository;
+
+	@Autowired
+	private GameRepository gameRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SalvoApplication.class, args);
@@ -25,5 +29,10 @@ public class SalvoApplication implements CommandLineRunner {
 		playerRepository.save(chloe);
 		playerRepository.save(kim);
 		playerRepository.save(tony);
+
+		gameRepository.save(new Game("Game 1", LocalDateTime.now()));
+		gameRepository.save(new Game("Game 2", LocalDateTime.now().plusHours(1)));
+		gameRepository.save(new Game("Game 3", LocalDateTime.now().plusHours(2)));
+
 	}
 }
