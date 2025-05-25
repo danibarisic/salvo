@@ -5,6 +5,12 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Game {
@@ -13,6 +19,16 @@ public class Game {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
+
+    @ManyToMany(mappedBy = "games")
+    private Set<Player> players = new HashSet<>();
+
+    @OneToMany(mappedBy = "game")
+    private Set<GamePlayer> gamePlayers;
+
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
 
     public Game() {
     }
