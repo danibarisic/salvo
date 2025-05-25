@@ -4,6 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -11,15 +14,20 @@ public class GamePlayer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String player;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id")
+    private Player player;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
     private LocalDateTime dateAdded;
-    private String game;
 
     public GamePlayer() {
-
     }
 
-    public GamePlayer(String game, String player) {
+    public GamePlayer(Game game, Player player) {
         this.game = game;
         this.player = player;
     }
@@ -32,11 +40,19 @@ public class GamePlayer {
         this.id = id;
     }
 
-    public String getPlayer() {
+    public Player getPlayer() {
         return player;
     }
 
-    public void setPlayer(String player) {
+    public void setPlayer(Player player) {
         this.player = player;
+    }
+
+    public LocalDateTime getDateAdded() {
+        return dateAdded;
+    }
+
+    public void setDateAdded(LocalDateTime dateAdded) {
+        this.dateAdded = dateAdded;
     }
 }
