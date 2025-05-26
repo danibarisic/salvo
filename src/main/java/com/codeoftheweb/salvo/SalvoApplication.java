@@ -41,5 +41,9 @@ public class SalvoApplication implements CommandLineRunner {
 		gamePlayerRepository.save(new GamePlayer(game2, chloe));
 		gamePlayerRepository.save(new GamePlayer(game1, kim));
 		gamePlayerRepository.save(new GamePlayer(game2, tony));
+		gamePlayerRepository.save(new GamePlayer(game3, jack));
+		gamePlayerRepository.save(new GamePlayer(game4, chloe));
+		gamePlayerRepository.save(new GamePlayer(game3, kim));
+		gamePlayerRepository.save(new GamePlayer(game4, tony));
 	}
 }
