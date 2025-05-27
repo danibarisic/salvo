@@ -15,6 +15,7 @@ Start the Java Backend.
 
 bash/powershell:
 ./mvnw spring-boot:run
+
 Or if using Gradle:
 ./gradlew bootRun
 
