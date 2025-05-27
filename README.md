@@ -13,9 +13,9 @@ Requirements
 How to Run
 Start the Java Backend.
 
-bash/powershell
+bash/powershell:
 ./mvnw spring-boot:run
-# or if using Gradle
+Or if using Gradle:
 ./gradlew bootRun
 
 It will start the server on http://localhost:8080
