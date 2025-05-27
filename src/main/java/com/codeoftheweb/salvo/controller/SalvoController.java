@@ -2,17 +2,17 @@ package com.codeoftheweb.salvo.controller;
 
 import com.codeoftheweb.salvo.GameRepository;
 import com.codeoftheweb.salvo.Player;
-import com.codeoftheweb.salvo.GamePlayer;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class SalvoController {
