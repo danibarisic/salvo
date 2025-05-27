@@ -1,0 +1,23 @@
+h1 {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 40px;
+  list-style-type: none;
+}
+
+p {
+  text-align: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 22px;
+  list-style-type: none;
+}
+
+.playerEmail {
+  text-align: left;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 22px;
+  list-style-type: none;
+}
+
+ul {
+  list-style-type: none;
+}

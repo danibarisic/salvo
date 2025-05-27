@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "react": "^19.1.0"
+  },
+  "scripts": {
+    "build": "react-scripts build",
+    "postbuild": "cp -r build/* ../../main/resources/static/web/"
+  }
+}
