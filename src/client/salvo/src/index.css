@@ -1,13 +1,17 @@
 h1 {
+  background-color: rgb(49, 49, 49);
+  color: white;
+  padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 40px;
   list-style-type: none;
+  border: solid red 7px;
 }
 
 p {
   text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 22px;
+  font-size: 24px;
   list-style-type: none;
 }
 
@@ -20,4 +24,12 @@ p {
 
 ul {
   list-style-type: none;
+  background-color: rgb(49, 49, 49);
+  color: white;
+  padding: 20px;
+  margin: 0;
+}
+
+.gameBorder {
+  border: solid red 7px;
 }
