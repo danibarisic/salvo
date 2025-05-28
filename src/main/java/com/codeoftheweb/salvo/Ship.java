@@ -4,11 +4,14 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GenerationType;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,18 +21,21 @@ public class Ship {
     private Long id;
 
     @ElementCollection
-    @CollectionTable()
+    @CollectionTable(name = "ship_location")
     @Column(name = "location")
-    private Set<String> location;
+    private List<String> location;
     private String type;
 
-    @ManyToMany
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    @OneToMany(mappedBy = "ship")
     private Set<GamePlayer> gamePlayers = new HashSet<>();
 
-    public Ship(Long id, Set<String> location, String type) {
-        this.id = id;
-        this.location = location;
+    public Ship(String type, List<String> location) {
         this.type = type;
+        this.location = location;
     }
 
     public Long getId() {
@@ -40,11 +46,19 @@ public class Ship {
         this.id = id;
     }
 
-    public Set<String> getLocation() {
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public List<String> getLocation() {
         return location;
     }
 
-    public void setLocation(Set<String> location) {
+    public void setLocation(List<String> location) {
         this.location = location;
     }
 
