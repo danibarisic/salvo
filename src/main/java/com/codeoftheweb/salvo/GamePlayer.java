@@ -24,6 +24,10 @@ public class GamePlayer {
     private Game game;
     private LocalDateTime dateAdded;
 
+    @ManyToOne
+    @JoinColumn(name = "ship_id")
+    private Ship ship;
+
     public GamePlayer() {
     }
 
