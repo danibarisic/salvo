@@ -1,8 +1,16 @@
 package com.codeoftheweb.salvo;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Game {
@@ -10,12 +18,47 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private Number date;
+    private LocalDateTime createdDate;
+
+    @ManyToMany(mappedBy = "games")
+    private Set<Player> players = new HashSet<>();
+
+    @OneToMany(mappedBy = "game")
+    private Set<GamePlayer> gamePlayers;
+
+    public Set<GamePlayer> getGamePlayers() {
+        return gamePlayers;
+    }
 
     public Game() {
-        public Game
+    }
 
+    public Game(String name, LocalDateTime createdDate) {
         this.name = name;
-        this.date = date;
-        
-    
+        this.createdDate = createdDate;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(LocalDateTime createdDate) {
+        this.createdDate = createdDate;
+    }
+}

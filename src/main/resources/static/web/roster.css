@@ -1,0 +1,17 @@
+.roster-container {
+    border: solid red 3px;
+    display: flex;
+    justify-content: space-around;
+}
+
+h1 {
+    margin-left: 30px;
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+ol li {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
