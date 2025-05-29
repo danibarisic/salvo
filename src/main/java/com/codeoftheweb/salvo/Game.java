@@ -4,14 +4,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Game {
@@ -27,9 +27,9 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private Set<GamePlayer> gamePlayers;
 
-    @ManyToOne
-    @JoinColumn(name = "ships_id")
-    private Ship ship;
+    @OneToMany(mappedBy = "game")
+    @JsonManagedReference
+    private Set<Ship> ships = new HashSet<>();
 
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
@@ -38,10 +38,15 @@ public class Game {
     public Game() {
     }
 
-    public Game(String name, Ship ship, LocalDateTime createdDate) {
+    public Game(String name, LocalDateTime createdDate) {
         this.name = name;
         this.createdDate = createdDate;
-        this.ship = ship;
+    }
+
+    public Game(String name, LocalDateTime createdDate, Set<Ship> ships) {
+        this.name = name;
+        this.createdDate = createdDate;
+        this.ships = ships;
     }
 
     public Long getId() {
@@ -60,12 +65,12 @@ public class Game {
         this.name = name;
     }
 
-    public Ship getShip() {
-        return ship;
+    public Set<Ship> getShips() {
+        return ships;
     }
 
-    public void setShip(Ship ship) {
-        this.ship = ship;
+    public void setShips(Set<Ship> ships) {
+        this.ships = ships;
     }
 
     public LocalDateTime getCreatedDate() {
