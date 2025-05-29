@@ -28,6 +28,7 @@ public class SalvoController {
                 .map(game -> {
                     Map<String, Object> dto = new LinkedHashMap<>();
                     dto.put("id", game.getId());
+                    dto.put("ships", game.getShips());
                     dto.put("created", game.getCreatedDate());
 
                     List<Map<String, Object>> gamePlayers = game.getGamePlayers()
