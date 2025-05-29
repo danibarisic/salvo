@@ -4,11 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+
 import java.time.LocalDateTime;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,10 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private Set<GamePlayer> gamePlayers;
 
+    @ManyToOne
+    @JoinColumn(name = "ships_id")
+    private Ship ship;
+
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
     }
@@ -33,9 +38,10 @@ public class Game {
     public Game() {
     }
 
-    public Game(String name, LocalDateTime createdDate) {
+    public Game(String name, Ship ship, LocalDateTime createdDate) {
         this.name = name;
         this.createdDate = createdDate;
+        this.ship = ship;
     }
 
     public Long getId() {
@@ -52,6 +58,14 @@ public class Game {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Ship getShip() {
+        return ship;
+    }
+
+    public void setShip(Ship ship) {
+        this.ship = ship;
     }
 
     public LocalDateTime getCreatedDate() {
