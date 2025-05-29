@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 public class Ship {
     @Id
@@ -28,10 +30,15 @@ public class Ship {
 
     @ManyToOne
     @JoinColumn(name = "game_id")
+    @JsonBackReference
     private Game game;
 
     @OneToMany(mappedBy = "ship")
-    private Set<GamePlayer> gamePlayers = new HashSet<>();
+    private Player gamePlayers;
+
+    public Ship() {
+
+    }
 
     public Ship(String type, List<String> location) {
         this.type = type;
@@ -52,6 +59,14 @@ public class Ship {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public Player getGamePlayers() {
+        return gamePlayers;
+    }
+
+    public void setGamePlayers(Player gamePlayers) {
+        this.gamePlayers = gamePlayers;
     }
 
     public List<String> getLocation() {
