@@ -33,3 +33,31 @@ ul {
 .gameBorder {
   border: solid red 7px;
 }
+
+.grid-container {
+  display: inline-block;
+  margin: 20px;
+  font-family: sans-serif;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 40px;
+}
+
+.header-cell {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.corner {
+  background-color: transparent;
+  border: none;
+}
