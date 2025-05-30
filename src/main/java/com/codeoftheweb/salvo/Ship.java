@@ -1,18 +1,13 @@
 package com.codeoftheweb.salvo;
 
 import jakarta.persistence.ElementCollection;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.GenerationType;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -22,18 +17,22 @@ public class Ship {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ElementCollection
-    @CollectionTable(name = "ship_location")
-    @Column(name = "location")
-    private List<String> location;
     private String type;
+
+    @ElementCollection
+    private List<String> location;
 
     @ManyToOne
     @JoinColumn(name = "game_id")
     @JsonBackReference
     private Game game;
 
-    @OneToMany(mappedBy = "ship")
+    @ManyToOne
+    @JoinColumn(name = "game_player_id")
+    private GamePlayer gamePlayer;
+
+    @ManyToOne
+    @JoinColumn(name = "player_id")
     private Player gamePlayers;
 
     public Ship() {
@@ -85,4 +84,11 @@ public class Ship {
         this.type = type;
     }
 
+    public GamePlayer getGamePlayer() {
+        return gamePlayer;
+    }
+
+    public void setGamePlayer(GamePlayer gamePlayer) {
+        this.gamePlayer = gamePlayer;
+    }
 }
