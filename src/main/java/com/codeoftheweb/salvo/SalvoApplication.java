@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.codeoftheweb.salvo.controller.SalvoController;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 
@@ -15,6 +16,7 @@ public class SalvoApplication implements CommandLineRunner {
 	@Autowired
 	private PlayerRepository playerRepository;
 
+	// Connecting the different repos.
 	@Autowired
 	private GameRepository gameRepository;
 	@Autowired
@@ -51,171 +53,167 @@ public class SalvoApplication implements CommandLineRunner {
 		Game game4 = gameRepository.save(new Game("Game 4", LocalDateTime.now().plusHours(3)));
 		Game game5 = gameRepository.save(new Game("Game 5", LocalDateTime.now().plusHours(4)));
 		Game game6 = gameRepository.save(new Game("Game 6", LocalDateTime.now().plusHours(5)));
+		Game game7 = gameRepository.save(new Game("Game 7", LocalDateTime.now().plusHours(5)));
+		Game game8 = gameRepository.save(new Game("Game 8", LocalDateTime.now().plusHours(5)));
 
 		// ...And saving them to different games.
-		gamePlayerRepository.save(new GamePlayer(game1, jack));
-		gamePlayerRepository.save(new GamePlayer(game2, chloe));
-		gamePlayerRepository.save(new GamePlayer(game1, kim));
-		gamePlayerRepository.save(new GamePlayer(game2, tony));
-		gamePlayerRepository.save(new GamePlayer(game3, jack));
-		gamePlayerRepository.save(new GamePlayer(game4, chloe));
-		gamePlayerRepository.save(new GamePlayer(game3, kim));
-		gamePlayerRepository.save(new GamePlayer(game4, tony));
+		GamePlayer gpj1 = gamePlayerRepository.save(new GamePlayer(game1, jack));
+		GamePlayer gpc1 = gamePlayerRepository.save(new GamePlayer(game1, chloe));
+		GamePlayer gpj2 = gamePlayerRepository.save(new GamePlayer(game2, jack));
+		GamePlayer gpc2 = gamePlayerRepository.save(new GamePlayer(game2, chloe));
+		GamePlayer gpc3 = gamePlayerRepository.save(new GamePlayer(game3, chloe));
+		GamePlayer gpt3 = gamePlayerRepository.save(new GamePlayer(game3, tony));
+		GamePlayer gpc4 = gamePlayerRepository.save(new GamePlayer(game4, chloe));
+		GamePlayer gpj4 = gamePlayerRepository.save(new GamePlayer(game4, jack));
+		GamePlayer gpt5 = gamePlayerRepository.save(new GamePlayer(game5, tony));
+		GamePlayer gpj5 = gamePlayerRepository.save(new GamePlayer(game5, jack));
+		GamePlayer gpk6 = gamePlayerRepository.save(new GamePlayer(game6, kim));
+		GamePlayer gpt7 = gamePlayerRepository.save(new GamePlayer(game7, tony));
+		GamePlayer gpt8 = gamePlayerRepository.save(new GamePlayer(game8, tony));
+		GamePlayer gpk8 = gamePlayerRepository.save(new GamePlayer(game8, kim));
 
 		// Creating the ships for Game 1.
 		Ship destroyer = new Ship("Destroyer", Arrays.asList("H2", "H3", "H4"));
-		destroyer.setGame(game1);
-		game1.getShips().add(destroyer);
-		destroyer.setGamePlayers(jack);
+		gpj1.getShips().add(destroyer);
+		destroyer.setGamePlayer(gpj1);
 		shipRepository.save(destroyer);
 
 		Ship submarine = new Ship("Submarine", Arrays.asList("E1", "F1", "G1"));
-		submarine.setGame(game1);
-		game1.getShips().add(submarine);
-		submarine.setGamePlayers(jack);
+		gpj1.getShips().add(submarine);
+		submarine.setGamePlayer(gpj1);
 		shipRepository.save(submarine);
 
 		Ship patrolBoat = new Ship("Patrol Boat", Arrays.asList("B4", "B5"));
-		patrolBoat.setGame(game1);
-		game1.getShips().add(patrolBoat);
-		patrolBoat.setGamePlayers(jack);
+		gpj1.getShips().add(patrolBoat);
+		patrolBoat.setGamePlayer(gpj1);
 		shipRepository.save(patrolBoat);
 
 		Ship destroyer2 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer2.setGame(game1);
-		game1.getShips().add(destroyer2);
-		destroyer2.setGamePlayers(chloe);
+		gpc1.getShips().add(destroyer2);
+		destroyer2.setGamePlayer(gpc1);
 		shipRepository.save(destroyer2);
 
 		Ship patrolBoat2 = new Ship("Patrol Boat", Arrays.asList("F1", "F2"));
-		patrolBoat2.setGame(game1);
-		game1.getShips().add(patrolBoat2);
-		patrolBoat2.setGamePlayers(chloe);
+		gpc1.getShips().add(patrolBoat2);
+		patrolBoat2.setGamePlayer(gpc1);
 		shipRepository.save(patrolBoat2);
 
 		// Creating the ships for Game 2.
 		Ship destroyer3 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer3.setGame(game2);
-		game2.getShips().add(destroyer3);
-		destroyer3.setGamePlayers(jack);
+		gpj2.getShips().add(destroyer3);
+		destroyer3.setGamePlayer(gpj2);
 		shipRepository.save(destroyer3);
 
 		Ship patrolBoat3 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
-		patrolBoat3.setGame(game2);
-		game2.getShips().add(patrolBoat3);
-		patrolBoat3.setGamePlayers(jack);
+		gpj2.getShips().add(patrolBoat3);
+		patrolBoat3.setGamePlayer(gpj2);
 		shipRepository.save(patrolBoat3);
 
 		Ship submarine2 = new Ship("Submarine", Arrays.asList("A2", "A3", "A4"));
-		submarine2.setGame(game2);
-		game2.getShips().add(submarine2);
-		submarine2.setGamePlayers(chloe);
+		gpc2.getShips().add(submarine2);
+		submarine2.setGamePlayer(gpc2);
 		shipRepository.save(submarine2);
 
 		Ship patrolBoat4 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
-		patrolBoat4.setGame(game2);
-		game2.getShips().add(patrolBoat4);
-		patrolBoat4.setGamePlayers(chloe);
+		gpc2.getShips().add(patrolBoat4);
+		patrolBoat4.setGamePlayer(gpc2);
 		shipRepository.save(patrolBoat4);
 
 		// Creating the ships for Game 3.
 		Ship destroyer4 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer4.setGame(game3);
-		game3.getShips().add(destroyer4);
-		destroyer4.setGamePlayers(chloe);
+		gpc3.getShips().add(destroyer4);
+		destroyer4.setGamePlayer(gpc3);
 		shipRepository.save(destroyer4);
 
 		Ship patrolBoat5 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
-		patrolBoat5.setGame(game3);
-		game3.getShips().add(patrolBoat5);
-		patrolBoat5.setGamePlayers(chloe);
+		gpc3.getShips().add(patrolBoat5);
+		patrolBoat5.setGamePlayer(gpc3);
 		shipRepository.save(patrolBoat5);
 
 		Ship submarine3 = new Ship("Submarine", Arrays.asList("A2", "A3", "A4"));
-		submarine3.setGame(game3);
-		game3.getShips().add(submarine3);
-		submarine3.setGamePlayers(tony);
+		gpt3.getShips().add(submarine3);
+		submarine3.setGamePlayer(gpt3);
 		shipRepository.save(submarine3);
 
 		Ship patrolBoat6 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
-		patrolBoat6.setGame(game3);
-		game3.getShips().add(patrolBoat6);
-		patrolBoat6.setGamePlayers(tony);
+		gpt3.getShips().add(patrolBoat6);
+		patrolBoat6.setGamePlayer(gpt3);
 		shipRepository.save(patrolBoat6);
 
 		// Creating the ships for Game 4.
 		Ship destroyer5 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer5.setGame(game4);
-		game4.getShips().add(destroyer5);
-		destroyer5.setGamePlayers(chloe);
+		gpc4.getShips().add(destroyer5);
+		destroyer5.setGamePlayer(gpc4);
 		shipRepository.save(destroyer5);
 
 		Ship patrolBoat7 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
-		patrolBoat7.setGame(game4);
-		game4.getShips().add(patrolBoat7);
-		patrolBoat7.setGamePlayers(chloe);
+		gpc4.getShips().add(patrolBoat7);
+		patrolBoat7.setGamePlayer(gpc4);
 		shipRepository.save(patrolBoat7);
 
 		Ship submarine4 = new Ship("Submarine", Arrays.asList("A2", "A3", "A4"));
-		submarine4.setGame(game4);
-		game4.getShips().add(submarine4);
-		submarine4.setGamePlayers(jack);
+		gpj4.getShips().add(submarine4);
+		submarine4.setGamePlayer(gpj4);
 		shipRepository.save(submarine4);
 
 		Ship patrolBoat8 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
-		patrolBoat8.setGame(game4);
-		game4.getShips().add(patrolBoat8);
-		patrolBoat8.setGamePlayers(jack);
+		gpj4.getShips().add(patrolBoat8);
+		patrolBoat8.setGamePlayer(gpj4);
 		shipRepository.save(patrolBoat8);
 
 		// Creating the ships for Game 5.
 		Ship destroyer6 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer6.setGame(game5);
-		game5.getShips().add(destroyer6);
-		destroyer6.setGamePlayers(tony);
+		gpt5.getShips().add(destroyer6);
+		destroyer6.setGamePlayer(gpt5);
 		shipRepository.save(destroyer6);
 
 		Ship patrolBoat9 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
-		patrolBoat9.setGame(game5);
-		game5.getShips().add(patrolBoat9);
-		patrolBoat9.setGamePlayers(tony);
+		gpt5.getShips().add(patrolBoat9);
+		patrolBoat9.setGamePlayer(gpt5);
 		shipRepository.save(patrolBoat9);
 
 		Ship submarine5 = new Ship("Submarine", Arrays.asList("A2", "A3", "A4"));
-		submarine5.setGame(game5);
-		game5.getShips().add(submarine5);
-		submarine5.setGamePlayers(jack);
+		gpj5.getShips().add(submarine5);
+		submarine5.setGamePlayer(gpj5);
 		shipRepository.save(submarine5);
 
 		Ship patrolBoat10 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
-		patrolBoat10.setGame(game5);
-		game5.getShips().add(patrolBoat10);
-		patrolBoat10.setGamePlayers(jack);
+		gpj5.getShips().add(patrolBoat10);
+		patrolBoat10.setGamePlayer(gpj5);
 		shipRepository.save(patrolBoat10);
 
 		// Creating ships for Game 6.
 		Ship destroyer7 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
-		destroyer7.setGame(game6);
-		game6.getShips().add(destroyer7);
-		destroyer7.setGamePlayers(kim);
+		gpk6.getShips().add(destroyer7);
+		destroyer7.setGamePlayer(gpk6);
 		shipRepository.save(destroyer7);
 
 		Ship patrolBoat11 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
-		patrolBoat11.setGame(game6);
-		game6.getShips().add(patrolBoat11);
-		patrolBoat11.setGamePlayers(kim);
+		gpk6.getShips().add(patrolBoat11);
+		patrolBoat11.setGamePlayer(gpk6);
 		shipRepository.save(patrolBoat11);
+		gamePlayerRepository.save(gpk6);
+
+		// Creating ships for Game 8.
+		Ship destroyer8 = new Ship("Destroyer", Arrays.asList("B5", "C5", "D5"));
+		gpk8.getShips().add(destroyer8);
+		destroyer8.setGamePlayer(gpk8);
+		shipRepository.save(destroyer8);
+
+		Ship patrolBoat12 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
+		gpk8.getShips().add(patrolBoat12);
+		patrolBoat12.setGamePlayer(gpk8);
+		shipRepository.save(patrolBoat12);
 
 		Ship submarine6 = new Ship("Submarine", Arrays.asList("A2", "A3", "A4"));
-		submarine6.setGame(game6);
-		game6.getShips().add(submarine6);
-		submarine6.setGamePlayers(kim);
+		gpt8.getShips().add(submarine6);
+		submarine6.setGamePlayer(gpt8);
 		shipRepository.save(submarine6);
 
-		Ship patrolBoat12 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
-		patrolBoat12.setGame(game6);
-		game6.getShips().add(patrolBoat12);
-		patrolBoat12.setGamePlayers(kim);
-		shipRepository.save(patrolBoat12);
+		Ship patrolBoat13 = new Ship("Patrol Boat", Arrays.asList("G6", "H6"));
+		gpt8.getShips().add(patrolBoat13);
+		patrolBoat13.setGamePlayer(gpt8);
+		shipRepository.save(patrolBoat13);
+
 	}
 }
