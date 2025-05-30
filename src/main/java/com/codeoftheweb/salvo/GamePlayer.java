@@ -1,11 +1,16 @@
 package com.codeoftheweb.salvo;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
+import java.util.ArrayList;
 
 import java.time.LocalDateTime;
 
@@ -24,9 +29,8 @@ public class GamePlayer {
     private Game game;
     private LocalDateTime dateAdded;
 
-    @ManyToOne
-    @JoinColumn(name = "ship_id")
-    private Ship ship;
+    @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Ship> ships = new ArrayList<>();
 
     public GamePlayer() {
     }
@@ -44,6 +48,14 @@ public class GamePlayer {
         this.id = id;
     }
 
+    public List<Ship> getShips() {
+        return ships;
+    }
+
+    public void setShips(List<Ship> ships) {
+        this.ships = ships;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -58,5 +70,13 @@ public class GamePlayer {
 
     public void setDateAdded(LocalDateTime dateAdded) {
         this.dateAdded = dateAdded;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 }
