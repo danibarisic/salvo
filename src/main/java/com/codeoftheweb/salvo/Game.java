@@ -11,8 +11,6 @@ import jakarta.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 public class Game {
     @Id
@@ -25,11 +23,7 @@ public class Game {
     private Set<Player> players = new HashSet<>();
 
     @OneToMany(mappedBy = "game")
-    private Set<GamePlayer> gamePlayers;
-
-    @OneToMany(mappedBy = "game")
-    @JsonManagedReference
-    private Set<Ship> ships = new HashSet<>();
+    private Set<GamePlayer> gamePlayers = new HashSet<>();
 
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
@@ -41,12 +35,6 @@ public class Game {
     public Game(String name, LocalDateTime createdDate) {
         this.name = name;
         this.createdDate = createdDate;
-    }
-
-    public Game(String name, LocalDateTime createdDate, Set<Ship> ships) {
-        this.name = name;
-        this.createdDate = createdDate;
-        this.ships = ships;
     }
 
     public Long getId() {
@@ -63,14 +51,6 @@ public class Game {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Ship> getShips() {
-        return ships;
-    }
-
-    public void setShips(Set<Ship> ships) {
-        this.ships = ships;
     }
 
     public LocalDateTime getCreatedDate() {
