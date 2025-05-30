@@ -1,11 +1,12 @@
 
 import './App.css';
-import { GameList } from './components/gamesList.jsx'
+import { GameInfo, CreateGrid } from './components/game.jsx'
 
 function App() {
   return (
     <div className="App">
-      <GameList />
+      <GameInfo />
+      <CreateGrid />
     </div>
   );
 }

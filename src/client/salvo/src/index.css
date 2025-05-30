@@ -1,23 +1,63 @@
 h1 {
+  background-color: rgb(49, 49, 49);
+  color: white;
+  padding: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 40px;
   list-style-type: none;
+  border: solid red 7px;
 }
 
 p {
   text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 22px;
+  font-size: 24px;
   list-style-type: none;
 }
 
 .playerEmail {
   text-align: left;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 22px;
+  font-size: 22gpx;
   list-style-type: none;
 }
 
 ul {
   list-style-type: none;
+  background-color: rgb(49, 49, 49);
+  color: white;
+  padding: 20px;
+  margin: 0;
+}
+
+.gameBorder {
+  border: solid red 7px;
+}
+
+.grid-container {
+  display: inline-block;
+  margin: 20px;
+  font-family: sans-serif;
+}
+
+.row {
+  display: flex;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  text-align: center;
+  line-height: 40px;
+}
+
+.header-cell {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.corner {
+  background-color: transparent;
+  border: none;
 }
