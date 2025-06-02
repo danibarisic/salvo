@@ -61,3 +61,7 @@ ul {
   background-color: transparent;
   border: none;
 }
+
+.ship-cell {
+  background-color: #4caf50;
+}
