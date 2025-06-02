@@ -4,12 +4,13 @@ import '../index.css';
 
 export const GameInfo = () => {
     const [games, setGames] = useState(null);
-    const { gameId } = useParams(); //Fetches the game number from the URL.
+    const { gpId } = useParams(); //Fetches the player number from the URL.
+    const gpIdNum = parseInt(gpId, 10);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`http://localhost:8080/api/game_view/${gameId}`);
+                const res = await fetch(`http://localhost:8080/api/game_view/${gpId}`);
                 const data = await res.json();
                 setGames(data);
 
@@ -18,23 +19,23 @@ export const GameInfo = () => {
             }
         };
         fetchData();
-    }, [gameId]);
+    }, [gpId]);
 
     if (!games) {
         return <h1>Loading game...</h1>;
     }
+    console.log('gpId from URL:', gpId);
+    console.log('gameId from API response:', games.gameId);
+    const gamePlayer = games.gamePlayers.find(gp => gp.id === gpIdNum);
+    const opponent = games.gamePlayers.find(gp => gp.id !== gpIdNum);
 
     return (
         <>
             <h1>Ship Locations</h1>
             <div className="gameBorder">
                 <p>Game: {games.gameId} - started on {new Date(games.created).toLocaleString()}</p>
-                <p>Players:</p>
-                <ul>
-                    {games.gamePlayers.map(gp => (
-                        <li className="playerEmail" key={gp.id}>{gp.player.email}</li>
-                    ))}
-                </ul>
+                <p>Player: {gamePlayer ? gamePlayer.player.email : "Player not found."}</p>
+                <p>Opponent: {opponent ? opponent.player.email : "Waiting for opponent..."}</p>
             </div>
         </>
     );
