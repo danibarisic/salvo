@@ -9,7 +9,7 @@ function App() {
     <>
       <Router>
         <Routes>
-          <Route path="/games/:gameId"
+          <Route path="/game_view/:gpId"
             element={
               <>
                 <GameInfo />
