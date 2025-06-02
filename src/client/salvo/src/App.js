@@ -1,10 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import { GameInfo, CreateGrid } from './components/game.jsx'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
+  const [playerShips, setPlayerShips] = useState([]);
   return (
     <>
       <Router>
@@ -12,8 +13,8 @@ function App() {
           <Route path="/game_view/:gpId"
             element={
               <>
-                <GameInfo />
-                <CreateGrid />
+                <GameInfo setPlayerShips={setPlayerShips} />
+                <CreateGrid playerShips={playerShips} />
               </>
             }
           />
