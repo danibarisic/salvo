@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.controller;
 import com.codeoftheweb.salvo.GameRepository;
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
+import com.codeoftheweb.salvo.GamePlayer;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +25,14 @@ public class SalvoController {
 
     @Autowired
     private GameRepository gameRepository;
+    @Autowired
+    private GamePlayerRepository gamePlayerRepository;
 
-    @GetMapping("/game_view/{gameId}")
-    public Map<String, Object> getGameView(@PathVariable Long gameId) {
+    @GetMapping("/game_view/{gpId}")
+    public Map<String, Object> getGameView(@PathVariable Long gpId) {
 
-        Game game = gameRepository.findById(gameId).orElseThrow();
-
+        GamePlayer gamePlayer = gamePlayerRepository.findById(gpId).orElseThrow();
+        Game game = gamePlayer.getGame();
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("gameId", game.getId());
         dto.put("created", game.getCreatedDate());
