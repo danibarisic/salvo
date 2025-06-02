@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import '../index.css';
 
 export const GameInfo = () => {
     const [games, setGames] = useState(null);
+    const { gameId } = useParams(); //Fetches the game number from the URL.
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch("http://localhost:8080/api/game_view/1");
+                const res = await fetch(`http://localhost:8080/api/game_view/${gameId}`);
                 const data = await res.json();
                 setGames(data);
 
@@ -16,7 +18,7 @@ export const GameInfo = () => {
             }
         };
         fetchData();
-    }, []);
+    }, [gameId]);
 
     if (!games) {
         return <h1>Loading game...</h1>;
@@ -38,22 +40,21 @@ export const GameInfo = () => {
     );
 }
 
+// Component for creating the grid.
 export const CreateGrid = () => {
-    const letters = 'ABCDEFGHIJ'.split('');
-    const numbers = Array.from({ length: 10 }, (_, i) => i + 1);
+    const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
+    const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
 
     return (
         <div className="grid-container">
-            {/* Header row */}
             <div className="row header">
                 <div className="cell corner"></div>
                 {numbers.map(n => (
-                    <div key={n} className="cell header-cell">{n}</div>
+                    <div key={n} className="cell header-cell">{n}</div> //Creates a square-like div for each number from numbers.
                 ))}
             </div>
 
-            {/* Grid rows */}
-            {letters.map(letter => (
+            {letters.map(letter => ( //Create a lettered box, then 10 consecutive empty ones. One row for each letter.
                 <div key={letter} className="row">
                     <div className="cell header-cell">{letter}</div>
                     {numbers.map(n => (
