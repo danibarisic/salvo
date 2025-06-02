@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../index.css';
 
-export const GameInfo = () => {
+export const GameInfo = ({ setPlayerShips }) => {
     const [games, setGames] = useState(null);
     const { gpId } = useParams(); //Fetches the player number from the URL.
     const gpIdNum = parseInt(gpId, 10);
@@ -13,19 +13,19 @@ export const GameInfo = () => {
                 const res = await fetch(`http://localhost:8080/api/game_view/${gpId}`);
                 const data = await res.json();
                 setGames(data);
+                setPlayerShips(data.ships || []);
 
             } catch (error) {
                 console.error(error);
             }
         };
         fetchData();
-    }, [gpId]);
+    }, [gpId, setPlayerShips]);
 
     if (!games) {
         return <h1>Loading game...</h1>;
     }
-    console.log('gpId from URL:', gpId);
-    console.log('gameId from API response:', games.gameId);
+
     const gamePlayer = games.gamePlayers.find(gp => gp.id === gpIdNum);
     const opponent = games.gamePlayers.find(gp => gp.id !== gpIdNum);
 
@@ -42,9 +42,12 @@ export const GameInfo = () => {
 }
 
 // Component for creating the grid.
-export const CreateGrid = () => {
+export const CreateGrid = ({ playerShips = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
     const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
+    const shipLocations = new Set(
+        playerShips.flatMap(ship => ship.locations)
+    )
 
     return (
         <div className="grid-container">
@@ -58,9 +61,18 @@ export const CreateGrid = () => {
             {letters.map(letter => ( //Create a lettered box, then 10 consecutive empty ones. One row for each letter.
                 <div key={letter} className="row">
                     <div className="cell header-cell">{letter}</div>
-                    {numbers.map(n => (
-                        <div key={n} className="cell"></div>
-                    ))}
+                    {numbers.map(n => {
+                        const coord = `${letter}${n}`;
+                        const isShip = shipLocations.has(coord);
+
+                        return (
+                            <div
+                                key={n}
+                                className={`cell ${isShip ? 'ship-cell' : ''}`}
+                            //if the cell contains a location it becomes a ship-cell which will be coloured and marked on the grid, with ship-cell styling.
+                            ></div>
+                        );
+                    })}
                 </div>
             ))}
         </div>
