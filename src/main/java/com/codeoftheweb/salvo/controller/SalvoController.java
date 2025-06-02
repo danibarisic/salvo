@@ -24,9 +24,9 @@ import java.util.Map;
 public class SalvoController {
 
     @Autowired
-    private GameRepository gameRepository;
+    private GameRepository gameRepository; // Link game repo.
     @Autowired
-    private GamePlayerRepository gamePlayerRepository;
+    private GamePlayerRepository gamePlayerRepository; // Link gamePlayer repo.
 
     @GetMapping("/game_view/{gpId}")
     public Map<String, Object> getGameView(@PathVariable Long gpId) {
@@ -55,12 +55,12 @@ public class SalvoController {
 
         dto.put("gamePlayers", gamePlayers);
 
-        List<Map<String, Object>> ships = game.getGamePlayers().stream()
-                .flatMap(gp -> gp.getShips().stream())
+        List<Map<String, Object>> ships = gamePlayer.getShips().stream()
                 .map(ship -> {
                     Map<String, Object> shipDto = new LinkedHashMap<>();
                     shipDto.put("type", ship.getType());
                     shipDto.put("locations", ship.getLocation());
+                    shipDto.put("ownerId", ship.getGamePlayer().getId());
                     return shipDto;
                 })
                 .collect(Collectors.toList());
