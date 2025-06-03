@@ -33,7 +33,7 @@ public class GamePlayer {
     private List<Ship> ships = new ArrayList<>();
 
     @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
-    private List<Salvo> salvos = new ArrayList<>();
+    private List<Salvo> salvoes = new ArrayList<>();
 
     public GamePlayer() {
     }
@@ -81,5 +81,13 @@ public class GamePlayer {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public List<Salvo> getSalvoes() {
+        return salvoes;
+    }
+
+    public void setSalvoes(List<Salvo> salvoes) {
+        this.salvoes = salvoes;
     }
 }
