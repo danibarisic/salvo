@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -34,6 +36,10 @@ public class GamePlayer {
 
     @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
     private List<Salvo> salvoes = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "score_id")
+    private List<Score> scores;
 
     public GamePlayer() {
     }
@@ -89,5 +95,9 @@ public class GamePlayer {
 
     public void setSalvoes(List<Salvo> salvoes) {
         this.salvoes = salvoes;
+    }
+
+    public List<Score> getScores() {
+        return scores;
     }
 }
