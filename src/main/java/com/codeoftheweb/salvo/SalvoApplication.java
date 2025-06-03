@@ -23,6 +23,8 @@ public class SalvoApplication implements CommandLineRunner {
 	private GamePlayerRepository gamePlayerRepository;
 	@Autowired
 	private ShipRepository shipRepository;
+	@Autowired
+	private SalvoRepository salvoRepository;
 
 	SalvoApplication(SalvoController salvoController) {
 		this.salvoController = salvoController;
@@ -215,5 +217,88 @@ public class SalvoApplication implements CommandLineRunner {
 		patrolBoat13.setGamePlayer(gpt8);
 		shipRepository.save(patrolBoat13);
 
+		Salvo salvo1 = new Salvo(gpj1, 1, Arrays.asList("B5", "C5", "F1"));
+		salvo1.setGamePlayer(gpj1);
+		salvoRepository.save(salvo1);
+
+		Salvo salvo2 = new Salvo(gpc1, 1, Arrays.asList("B4", "B5", "B6"));
+		salvo2.setGamePlayer(gpc1);
+		salvoRepository.save(salvo2);
+
+		Salvo salvo3 = new Salvo(gpj1, 2, Arrays.asList("F2", "D5"));
+		salvo3.setGamePlayer(gpj1);
+		salvoRepository.save(salvo3);
+
+		Salvo salvo4 = new Salvo(gpc1, 2, Arrays.asList("E1", "H3", "A2"));
+		salvo4.setGamePlayer(gpc1);
+		salvoRepository.save(salvo4);
+
+		Salvo salvo5 = new Salvo(gpj2, 1, Arrays.asList("A2", "A4", "G6"));
+		salvo5.setGamePlayer(gpj2);
+		salvoRepository.save(salvo5);
+
+		Salvo salvo6 = new Salvo(gpc2, 1, Arrays.asList("B5", "D5", "C7"));
+		salvo6.setGamePlayer(gpc2);
+		salvoRepository.save(salvo6);
+
+		Salvo salvo7 = new Salvo(gpj2, 2, Arrays.asList("A3", "h6"));
+		salvo7.setGamePlayer(gpj2);
+		salvoRepository.save(salvo7);
+
+		Salvo salvo8 = new Salvo(gpc2, 2, Arrays.asList("C5", "C6"));
+		salvo8.setGamePlayer(gpc2);
+		salvoRepository.save(salvo8);
+
+		Salvo salvo9 = new Salvo(gpc3, 1, Arrays.asList("G6", "H6", "A4"));
+		salvo9.setGamePlayer(gpc3);
+		salvoRepository.save(salvo9);
+
+		Salvo salvo10 = new Salvo(gpt3, 1, Arrays.asList("H1", "H2", "H3"));
+		salvo10.setGamePlayer(gpt3);
+		salvoRepository.save(salvo10);
+
+		Salvo salvo11 = new Salvo(gpc3, 2, Arrays.asList("A2", "A3", "D8"));
+		salvo11.setGamePlayer(gpc3);
+		salvoRepository.save(salvo11);
+
+		Salvo salvo12 = new Salvo(gpt3, 2, Arrays.asList("E1", "F2", "G3"));
+		salvo12.setGamePlayer(gpt3);
+		salvoRepository.save(salvo12);
+
+		Salvo salvo13 = new Salvo(gpc4, 1, Arrays.asList("A3", "A4", "F7"));
+		salvo13.setGamePlayer(gpc4);
+		salvoRepository.save(salvo13);
+
+		Salvo salvo14 = new Salvo(gpj4, 1, Arrays.asList("B5", "C6", "H1"));
+		salvo14.setGamePlayer(gpj4);
+		salvoRepository.save(salvo14);
+
+		Salvo salvo15 = new Salvo(gpc4, 2, Arrays.asList("A2", "G6", "H6"));
+		salvo15.setGamePlayer(gpc4);
+		salvoRepository.save(salvo15);
+
+		Salvo salvo16 = new Salvo(gpj4, 2, Arrays.asList("C5", "C7", "D5"));
+		salvo16.setGamePlayer(gpj4);
+		salvoRepository.save(salvo16);
+
+		Salvo salvo17 = new Salvo(gpt5, 1, Arrays.asList("A1", "A2", "A3"));
+		salvo17.setGamePlayer(gpt5);
+		salvoRepository.save(salvo17);
+
+		Salvo salvo18 = new Salvo(gpj5, 1, Arrays.asList("B5", "B6", "C7"));
+		salvo18.setGamePlayer(gpj5);
+		salvoRepository.save(salvo18);
+
+		Salvo salvo19 = new Salvo(gpt5, 2, Arrays.asList("G6", "G7", "G8"));
+		salvo19.setGamePlayer(gpt5);
+		salvoRepository.save(salvo19);
+
+		Salvo salvo20 = new Salvo(gpj5, 2, Arrays.asList("C6", "D6", "E6"));
+		salvo20.setGamePlayer(gpj5);
+		salvoRepository.save(salvo20);
+
+		Salvo salvo21 = new Salvo(gpj5, 3, Arrays.asList("H1", "H8"));
+		salvo21.setGamePlayer(gpj5);
+		salvoRepository.save(salvo21);
 	}
 }
