@@ -32,6 +32,9 @@ public class GamePlayer {
     @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Ship> ships = new ArrayList<>();
 
+    @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
+    private List<Salvo> salvos = new ArrayList<>();
+
     public GamePlayer() {
     }
 
