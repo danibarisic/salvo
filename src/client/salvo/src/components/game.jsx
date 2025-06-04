@@ -13,7 +13,6 @@ export const GameInfo = ({ setPlayerShips, setSalvoLocations }) => {
                 const res = await fetch(`http://localhost:8080/api/game_view/${gpId}`);
                 const data = await res.json();
                 setGames(data);
-                console.log("API response:", data);
                 const allSalvoes = data?.salvoes || [];
                 const playerSalvoes = allSalvoes.filter(salvo => salvo.gamePlayer === gpIdNum) || []; //filters only the current players salvoes.
                 const opponentSalvoes = allSalvoes.filter(salvo => salvo.gamePlayer !== gpIdNum) || [];
@@ -59,7 +58,7 @@ export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
     const opponentHits = new Set(
         opponentSalvoes.flatMap(salvo => salvo.locations)
     )
-    console.log("CreateGrid - opponentSalvoes received:", opponentSalvoes);
+
     return (
         <div className="grid-container">
             <div className="row header">
