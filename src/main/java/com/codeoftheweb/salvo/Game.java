@@ -4,10 +4,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +27,10 @@ public class Game {
 
     @OneToMany(mappedBy = "game")
     private Set<GamePlayer> gamePlayers = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "score_id")
+    private Score score;
 
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
