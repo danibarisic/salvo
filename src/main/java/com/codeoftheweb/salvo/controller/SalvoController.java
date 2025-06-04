@@ -66,6 +66,17 @@ public class SalvoController {
                 .collect(Collectors.toList());
 
         dto.put("ships", ships);
+
+        List<Map<String, Object>> salvoes = gamePlayer.getSalvoes().stream()
+                .map(salvo -> {
+                    Map<String, Object> salvoDto = new LinkedHashMap<>();
+                    salvoDto.put("gamePlayer", salvo.getGamePlayer().getId());
+                    salvoDto.put("turn", salvo.getTurnCount());
+                    salvoDto.put("locations", salvo.getLocation());
+                    return salvoDto;
+                })
+                .collect(Collectors.toList());
+        dto.put("salvoes", salvoes);
         return dto;
     }
 
