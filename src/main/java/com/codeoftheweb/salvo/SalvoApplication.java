@@ -25,6 +25,8 @@ public class SalvoApplication implements CommandLineRunner {
 	private ShipRepository shipRepository;
 	@Autowired
 	private SalvoRepository salvoRepository;
+	@Autowired
+	private ScoreRepository scoreRepository;
 
 	SalvoApplication(SalvoController salvoController) {
 		this.salvoController = salvoController;
@@ -300,5 +302,29 @@ public class SalvoApplication implements CommandLineRunner {
 		Salvo salvo21 = new Salvo(gpj5, 3, Arrays.asList("H1", "H8"));
 		salvo21.setGamePlayer(gpj5);
 		salvoRepository.save(salvo21);
+
+		Score score1 = new Score(gpj1, game1, 1.0);
+		scoreRepository.save(score1);
+
+		Score score2 = new Score(gpc1, game1, 0.0);
+		scoreRepository.save(score2);
+
+		Score score3 = new Score(gpj2, game2, 0.5);
+		scoreRepository.save(score3);
+
+		Score score4 = new Score(gpc2, game2, 0.5);
+		scoreRepository.save(score4);
+
+		Score score5 = new Score(gpc3, game3, 1.0);
+		scoreRepository.save(score5);
+
+		Score score6 = new Score(gpt3, game3, 0.0);
+		scoreRepository.save(score6);
+
+		Score score7 = new Score(gpc4, game4, 0.5);
+		scoreRepository.save(score7);
+
+		Score score8 = new Score(gpj4, game4, 0.5);
+		scoreRepository.save(score8);
 	}
 }
