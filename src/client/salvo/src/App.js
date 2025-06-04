@@ -24,7 +24,7 @@ function App() {
                   setSalvoLocations={setSalvoLocations} />
                 <CreateGrid
                   playerShips={playerShips}
-                  opponentSalvoes={salvoLocations.opponent}
+                  opponentSalvoes={salvoLocations?.opponent}
                 />
                 <CreateGridSalvo playerSalvoes={salvoLocations?.player || []} />
               </>

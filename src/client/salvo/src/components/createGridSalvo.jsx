@@ -1,11 +1,11 @@
 import React from "react";
 
 //Creating a separate grid for salvo strikes.
-export const CreateGridSalvo = ({ playerShips = [] }) => {
+export const CreateGridSalvo = ({ playerSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
     const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
-    const shipLocations = new Set(
-        playerShips.flatMap(ship => ship.locations)
+    const salvoLocations = new Set(
+        playerSalvoes.flatMap(salvo => salvo.locations)
     )
 
     return (
@@ -22,12 +22,12 @@ export const CreateGridSalvo = ({ playerShips = [] }) => {
                     <div className="cell header-cell">{letter}</div>
                     {numbers.map(n => {
                         const coord = `${letter}${n}`;
-                        const isShip = shipLocations.has(coord);
+                        const isSalvo = salvoLocations.has(coord);
 
                         return (
                             <div
                                 key={n}
-                                className={`cell ${isShip ? 'ship-cell' : ''}`}
+                                className={`cell ${isSalvo ? 'salvo-cell' : ''}`}
                             //if the cell contains a location it becomes a ship-cell which will be coloured and marked on the grid, with ship-cell styling.
                             ></div>
                         );

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import '../index.css';
 
-export const GameInfo = ({ setPlayerShips }) => {
+export const GameInfo = ({ setPlayerShips, setSalvoLocations }) => {
     const [games, setGames] = useState(null);
     const { gpId } = useParams(); //Fetches the player number from the URL.
     const gpIdNum = parseInt(gpId, 10);
@@ -13,14 +13,22 @@ export const GameInfo = ({ setPlayerShips }) => {
                 const res = await fetch(`http://localhost:8080/api/game_view/${gpId}`);
                 const data = await res.json();
                 setGames(data);
-                setPlayerShips(data.ships || []);
+                console.log("API response:", data);
+                const allSalvoes = data?.salvoes || [];
+                const playerSalvoes = allSalvoes.filter(salvo => salvo.gamePlayer === gpIdNum) || []; //filters only the current players salvoes.
+                const opponentSalvoes = allSalvoes.filter(salvo => salvo.gamePlayer !== gpIdNum) || [];
+                setPlayerShips(data?.ships || []);//if there is data, load ships otherwise empty array.
+                setSalvoLocations({
+                    player: playerSalvoes,
+                    opponent: opponentSalvoes
+                });
 
             } catch (error) {
                 console.error(error);
             }
         };
         fetchData();
-    }, [gpId, setPlayerShips]);
+    }, [gpId, gpIdNum, setPlayerShips, setSalvoLocations]);
 
     if (!games) {
         return <h1>Loading game...</h1>;
@@ -42,13 +50,16 @@ export const GameInfo = ({ setPlayerShips }) => {
 }
 
 // Component for creating the grid.
-export const CreateGrid = ({ playerShips = [] }) => {
+export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
     const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
     const shipLocations = new Set(
         playerShips.flatMap(ship => ship.locations)
     )
-
+    const opponentHits = new Set(
+        opponentSalvoes.flatMap(salvo => salvo.locations)
+    )
+    console.log("CreateGrid - opponentSalvoes received:", opponentSalvoes);
     return (
         <div className="grid-container">
             <div className="row header">
@@ -64,12 +75,17 @@ export const CreateGrid = ({ playerShips = [] }) => {
                     {numbers.map(n => {
                         const coord = `${letter}${n}`;
                         const isShip = shipLocations.has(coord);
+                        const isHit = opponentHits.has(coord);
+                        const isShipHit = isShip && isHit;
 
                         return (
                             <div
                                 key={n}
-                                className={`cell ${isShip ? 'ship-cell' : ''}`}
-                            //if the cell contains a location it becomes a ship-cell which will be coloured and marked on the grid, with ship-cell styling.
+                                className={`cell
+                                    ${isShipHit ? 'ship-hit-cell' : ''}
+                                    ${!isShipHit && isShip ? 'ship-cell' : ''}
+                                    ${!isShipHit && isHit ? 'opponent-salvo-cell' : ''}
+                                    `}
                             ></div>
                         );
                     })}
