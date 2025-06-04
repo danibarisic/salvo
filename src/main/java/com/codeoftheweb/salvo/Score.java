@@ -21,12 +21,16 @@ public class Score {
     @JoinColumn(name = "game_id")
     private Game game;
 
+    private Double score;
+
     public Score() {
 
     }
 
-    public Score(GamePlayer gamePlayer) {
+    public Score(GamePlayer gamePlayer, Game game, Double score) {
         this.gamePlayer = gamePlayer;
+        this.game = game;
+        this.score = score;
     }
 
     public Long getId() {
@@ -43,5 +47,21 @@ public class Score {
 
     public void setGamePlayer(GamePlayer gamePlayer) {
         this.gamePlayer = gamePlayer;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
     }
 }
