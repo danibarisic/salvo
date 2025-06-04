@@ -17,6 +17,10 @@ public class Score {
     @JoinColumn(name = "game_player_id")
     private GamePlayer gamePlayer;
 
+    @OneToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
+
     public Score() {
 
     }
