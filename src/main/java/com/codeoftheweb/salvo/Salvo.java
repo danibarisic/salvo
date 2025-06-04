@@ -62,7 +62,7 @@ public class Salvo {
         return location;
     }
 
-    public void setLocations(List<String> locations) {
-        this.location = locations;
+    public void setLocations(List<String> location) {
+        this.location = location;
     }
 }
