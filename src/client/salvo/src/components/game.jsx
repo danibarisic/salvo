@@ -5,7 +5,7 @@ import '../index.css';
 export const GameInfo = ({ setPlayerShips, setSalvoLocations }) => {
     const [games, setGames] = useState(null);
     const { gpId } = useParams(); //Fetches the player number from the URL.
-    const gpIdNum = parseInt(gpId, 10);
+    const gpIdNum = parseInt(gpId, 10); //Converts the string into an integer.
 
     useEffect(() => {
         const fetchData = async () => {
@@ -80,10 +80,10 @@ export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
 
                         return (
                             <div
-                                key={n}
-                                className={`cell
+                                key={n} //Changes the classes depending if the cell is a ship, is hit, or a ship that's hit.
+                                className={`cell 
                                     ${isShipHit ? 'ship-hit-cell' : ''}
-                                    ${!isShipHit && isShip ? 'ship-cell' : ''}
+                                    ${!isShipHit && isShip ? 'ship-cell' : ''} 
                                     ${!isShipHit && isHit ? 'opponent-salvo-cell' : ''}
                                     `}
                             ></div>
