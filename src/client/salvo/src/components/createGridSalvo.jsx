@@ -3,7 +3,7 @@ import React from "react";
 //Creating a separate grid for salvo strikes.
 export const CreateGridSalvo = ({ playerSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
-    const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; //Create an array of digits 1 - 10.
     const salvoLocations = new Set(
         playerSalvoes.flatMap(salvo => salvo.locations)
     )
