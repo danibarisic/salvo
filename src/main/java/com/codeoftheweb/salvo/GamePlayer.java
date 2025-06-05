@@ -37,8 +37,8 @@ public class GamePlayer {
     @OneToMany(mappedBy = "gamePlayer", cascade = CascadeType.ALL)
     private List<Salvo> salvoes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "gamePlayer")
-    private Score scores;
+    @OneToOne(mappedBy = "gamePlayer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Score score;
 
     public GamePlayer() {
     }
@@ -96,11 +96,11 @@ public class GamePlayer {
         this.salvoes = salvoes;
     }
 
-    public Score getScores() {
-        return scores;
+    public Score getScore() {
+        return score;
     }
 
-    public void setScores(Score scores) {
-        this.scores = scores;
+    public void setScore(Score score) {
+        this.score = score;
     }
 }

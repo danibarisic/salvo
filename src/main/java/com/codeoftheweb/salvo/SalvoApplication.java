@@ -303,28 +303,45 @@ public class SalvoApplication implements CommandLineRunner {
 		salvo21.setGamePlayer(gpj5);
 		salvoRepository.save(salvo21);
 
+		// Creating the scores according to the sample table.
 		Score score1 = new Score(gpj1, game1, 1.0);
+		score1.setPlayer(gpj1.getPlayer());
+		game1.getScores().add(score1);
 		scoreRepository.save(score1);
 
 		Score score2 = new Score(gpc1, game1, 0.0);
+		score2.setPlayer(gpc1.getPlayer());
+		game1.getScores().add(score2);
 		scoreRepository.save(score2);
 
 		Score score3 = new Score(gpj2, game2, 0.5);
+		score3.setPlayer(gpj2.getPlayer());
+		game2.getScores().add(score3);
 		scoreRepository.save(score3);
 
 		Score score4 = new Score(gpc2, game2, 0.5);
+		score4.setPlayer(gpc2.getPlayer());
+		game2.getScores().add(score4);
 		scoreRepository.save(score4);
 
 		Score score5 = new Score(gpc3, game3, 1.0);
+		score5.setPlayer(gpc3.getPlayer());
+		game3.getScores().add(score5);
 		scoreRepository.save(score5);
 
 		Score score6 = new Score(gpt3, game3, 0.0);
+		score6.setPlayer(gpt3.getPlayer());
+		game3.getScores().add(score6);
 		scoreRepository.save(score6);
 
 		Score score7 = new Score(gpc4, game4, 0.5);
+		score7.setPlayer(gpc4.getPlayer());
+		game4.getScores().add(score7);
 		scoreRepository.save(score7);
 
 		Score score8 = new Score(gpj4, game4, 0.5);
+		score8.setPlayer(gpj4.getPlayer());
+		game4.getScores().add(score8);
 		scoreRepository.save(score8);
 	}
 }

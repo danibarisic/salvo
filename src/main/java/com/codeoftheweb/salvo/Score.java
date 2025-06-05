@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
@@ -17,7 +18,11 @@ public class Score {
     @JoinColumn(name = "game_player_id")
     private GamePlayer gamePlayer;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "player_id")
+    private Player player;
+
+    @ManyToOne
     @JoinColumn(name = "game_id")
     private Game game;
 
@@ -63,5 +68,13 @@ public class Score {
 
     public void setScore(Double score) {
         this.score = score;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 }
