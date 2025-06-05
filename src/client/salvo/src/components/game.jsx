@@ -52,7 +52,7 @@ export const GameInfo = ({ setPlayerShips, setSalvoLocations }) => {
 // Component for creating the grid.
 export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
-    const numbers = Array.from({ length: 10 }, (value, i) => i + 1); //Create an array of digits 1 - 10.
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; //Create an array of digits 1 - 10.
     const shipLocations = new Set(
         playerShips.flatMap(ship => ship.locations)
     )
