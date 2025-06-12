@@ -39,10 +39,10 @@ public class SalvoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Creating the 4 players.
-		Player jack = new Player("Jack Bauer", "j.bauer@ctu.gov");
-		Player chloe = new Player("Chloe O'Brian", "c.obrian@ctu.gov");
-		Player kim = new Player("Kim Bauer", "kim_bauer@gmail.com");
-		Player tony = new Player("Tony Almeida", "t.almeida@ctu.gov");
+		Player jack = new Player("j.bauer@ctu.gov", "24");
+		Player chloe = new Player("c.obrian@ctu.gov", "42");
+		Player kim = new Player("kim_bauer@gmail.com", "kb");
+		Player tony = new Player("t.almeida@ctu.gov", "mole");
 
 		// ...And saving them to the repo.
 		playerRepository.save(jack);
