@@ -3,7 +3,17 @@ package com.codeoftheweb.salvo;
 import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
 import com.codeoftheweb.salvo.controller.SalvoController;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -343,5 +353,36 @@ public class SalvoApplication implements CommandLineRunner {
 		score8.setPlayer(gpj4.getPlayer());
 		game4.getScores().add(score8);
 		scoreRepository.save(score8);
+	}
+
+	@Configuration
+	class SecurityConfig {
+
+		@Autowired
+		private PlayerRepository playerRepository;
+
+		@Bean
+		public UserDetailsService userDetailsService() {
+			return username -> {
+				Player player = playerRepository.findByUserName(username);
+
+				if (player != null) {
+					return new User(
+							player.getUserName(),
+							player.getPassword(),
+							AuthorityUtils.createAuthorityList("USER"));
+				} else {
+					throw new UsernameNotFoundException("Unknown user: " + username);
+				}
+			};
+		}
+
+		@Bean
+		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+			http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated())
+					.formLogin(Customizer.withDefaults());
+
+			return http.build();
+		}
 	}
 }
