@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import { CreateGridSalvo } from './components/createGridSalvo.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
+import { Login } from './components/login.jsx';
 
 function App() {
   const [playerShips, setPlayerShips] = useState([]);
@@ -20,6 +21,7 @@ function App() {
           <Route path="/game_view/:gpId"
             element={
               <>
+                <Login />
                 <GameInfo
                   setPlayerShips={setPlayerShips} //State setter functions passed from parent components.
                   setSalvoLocations={setSalvoLocations} />
