@@ -9,9 +9,13 @@ import com.codeoftheweb.salvo.GamePlayer;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -192,6 +196,36 @@ public class SalvoController {
 
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/players")
+    public Player getPlayer(Authentication authentication) {
+        return playerRepository.findByUserName(authentication.getName());
+    }
+
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
+        Player player = playerRepository.findByEmail(email);
+
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "No player found with that email"));
+        }
+
+        if (!player.getPassword().equals(password)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Incorrect password"));
+        }
+
+        // You can customize the response as needed
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", player.getId());
+        response.put("email", player.getEmail());
+        response.put("message", "Login successful");
+
+        return ResponseEntity.ok(response);
     }
 
 }
