@@ -7,28 +7,41 @@ export const Login = () => {
 
     const HandleLogin = async (e) => {
         e.preventDefault();
-        const response = await fetch('api/players', {
-            method: 'POST',
-            headers: new Headers({
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }),
-            body: 'username=j.bauer@ctu.gov&password=123',
-        });
 
-        if (response.ok) {
-            console.log("Login Successful");
-        } else {
-            console.log("Login Unsuccessful");
+        const formBody = new URLSearchParams();
+        formBody.append('email', email);
+        formBody.append('password', password);
+
+        try {
+            const response = await fetch('http://localhost:8080/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formBody.toString(),
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                console.log("Login Successful");
+                setMessage("Login Successful");
+            } else {
+                console.log("Login Unsuccessful");
+                setMessage("Login Failed");
+            }
+        } catch (error) {
+            console.error("Error during login:", error);
+            setMessage("Login Error");
         }
     };
 
     return (
         <form onSubmit={HandleLogin}>
             <label>
-                UserName:
+                Email:
                 <input
                     type='text'
-                    name='username'
+                    name='email'
                     placeholder='example@hotmail.com'
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
