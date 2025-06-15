@@ -3,12 +3,13 @@ package com.codeoftheweb.salvo;
 import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -356,33 +357,35 @@ public class SalvoApplication implements CommandLineRunner {
 	}
 
 	@Configuration
-	class SecurityConfig {
+	@EnableWebSecurity
+	public class SecurityConfig {
 
 		@Autowired
 		private PlayerRepository playerRepository;
 
 		@Bean
 		public UserDetailsService userDetailsService() {
-			return username -> {
-				Player player = playerRepository.findByUserName(username);
+			var user = User.withDefaultPasswordEncoder()
+					.username("user")
+					.password("password")
+					.roles("USER")
+					.build();
 
-				if (player != null) {
-					return new User(
-							player.getUserName(),
-							player.getPassword(),
-							AuthorityUtils.createAuthorityList("USER"));
-				} else {
-					throw new UsernameNotFoundException("Unknown user: " + username);
-				}
-			};
-		}
-
-		@Bean
-		public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-			http.authorizeHttpRequests(authz -> authz.anyRequest().authenticated())
-					.formLogin(Customizer.withDefaults());
-
-			return http.build();
-		}
+			return new InMemoryUserDetailsManager(user);
+		};
 	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+				.formLogin(form -> form.loginPage("/login").permitAll());
+
+		return http.build();
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+	}
+
 }
