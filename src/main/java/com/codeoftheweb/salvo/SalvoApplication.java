@@ -363,7 +363,7 @@ public class SalvoApplication implements CommandLineRunner {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**") // Allow all endpoints
-						.allowedOrigins("http://localhost:3000") // Or whatever your frontend URL is
+						.allowedOrigins("http://localhost:3000")
 						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 						.allowedHeaders("*")
 						.allowCredentials(true);
