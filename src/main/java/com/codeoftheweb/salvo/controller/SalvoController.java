@@ -6,6 +6,7 @@ import com.codeoftheweb.salvo.Score;
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
 import com.codeoftheweb.salvo.GamePlayer;
+import com.codeoftheweb.salvo.PlayerDTO;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -216,11 +217,6 @@ public class SalvoController {
         }).collect(Collectors.toList());
     }
 
-    @GetMapping("/players")
-    public Player getPlayer(Authentication authentication) {
-        return playerRepository.findByUserName(authentication.getName());
-    }
-
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
         Player player = playerRepository.findByEmail(email);
@@ -263,8 +259,10 @@ public class SalvoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/all-players")
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
+    @GetMapping("/players")
+    public List<PlayerDTO> getPlayer() {
+        return playerRepository.findAll().stream()
+                .map(player -> new PlayerDTO(player.getId(), player.getEmail()))
+                .toList();
     }
 }
