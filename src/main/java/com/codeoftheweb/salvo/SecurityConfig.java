@@ -56,8 +56,9 @@ public class SecurityConfig {
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/api/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/login", "/api/**").permitAll())
+                // Look Here
+                // .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginProcessingUrl("/login")
                         .successHandler((request, response, authentication) -> {
