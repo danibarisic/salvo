@@ -12,10 +12,8 @@ export const Login = () => {
         fetch("http://localhost:8080/api/players", {
             credentials: "include",
         })
-            .then((res) => {
-                setIsLoggedIn(res.ok);
-            })
-            .catch(() => setIsLoggedIn(false));
+            .then((res) => setIsLoggedIn(res.ok))
+            .catch(() => setIsLoggedIn(false))
     }, []);
 
     const HandleLogin = async (e) => {
@@ -48,9 +46,11 @@ export const Login = () => {
             if (response.ok) {
                 console.log("Login Successful");
                 setMessage("Login Successful");
+                setIsLoggedIn(true);
             } else if (response.status === 401) {
                 console.log("Login Failed: Unauthorized")
                 setMessage("Login Failed: Unauthorized")
+                window.location.href = "/login"
             } else {
                 console.log("Login Unsuccessful");
                 setMessage("Login Failed");
@@ -153,7 +153,7 @@ export const Login = () => {
             <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
 
             {isLoggedIn && (
-                <button onClick={HandleLogout}>Log Out</button>
+                <button onClick={HandleLogout} disabled={loading}>Log Out</button>
             )}
 
             <button onClick={HandleRegister} disabled={loading}>
