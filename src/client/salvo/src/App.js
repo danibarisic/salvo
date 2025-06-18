@@ -38,6 +38,9 @@ function App() {
           <Route path="/leaderboard" element={<Leaderboard />}
           //path to leaderboard simply displays the Leaderboard component.
           />
+          <Route path="/login" element={<Login />}
+          //path to leaderboard simply displays the Leaderboard component.
+          />
         </Routes>
       </Router>
     </>
