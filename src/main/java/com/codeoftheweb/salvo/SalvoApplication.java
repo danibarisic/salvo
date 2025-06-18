@@ -4,24 +4,20 @@ import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.codeoftheweb.salvo.controller.SalvoController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 public class SalvoApplication implements CommandLineRunner {
@@ -30,7 +26,7 @@ public class SalvoApplication implements CommandLineRunner {
 	@Autowired
 	private PlayerRepository playerRepository;
 
-	// Connecting the different repos.
+	// Injecting the different repos.
 	@Autowired
 	private GameRepository gameRepository;
 	@Autowired
@@ -41,6 +37,8 @@ public class SalvoApplication implements CommandLineRunner {
 	private SalvoRepository salvoRepository;
 	@Autowired
 	private ScoreRepository scoreRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	SalvoApplication(SalvoController salvoController) {
 		this.salvoController = salvoController;
@@ -53,10 +51,10 @@ public class SalvoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Creating the 4 players.
-		Player jack = new Player("j.bauer@ctu.gov", "24");
-		Player chloe = new Player("c.obrian@ctu.gov", "42");
-		Player kim = new Player("kim_bauer@gmail.com", "kb");
-		Player tony = new Player("t.almeida@ctu.gov", "mole");
+		Player jack = new Player("j.bauer@ctu.gov", passwordEncoder.encode("24"));
+		Player chloe = new Player("c.obrian@ctu.gov", passwordEncoder.encode("42"));
+		Player kim = new Player("kim_bauer@gmail.com", passwordEncoder.encode("kb"));
+		Player tony = new Player("t.almeida@ctu.gov", passwordEncoder.encode("mole"));
 
 		// ...And saving them to the repo.
 		playerRepository.save(jack);
@@ -359,54 +357,30 @@ public class SalvoApplication implements CommandLineRunner {
 		scoreRepository.save(score8);
 	}
 
-	@Configuration
-	@EnableWebSecurity
-	public class SecurityConfig {
-
-		@Autowired
-		private PlayerRepository playerRepository;
-
-		@Bean
-		public UserDetailsService userDetailsService() {
-			var user = User.withDefaultPasswordEncoder()
-					.username("user")
-					.password("password")
-					.roles("USER")
-					.build();
-
-			return new InMemoryUserDetailsManager(user);
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**") // Allow all endpoints
+						.allowedOrigins("http://localhost:3000") // Or whatever your frontend URL is
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true);
+			}
 		};
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/login").permitAll());
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:3000"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
 
-		return http.build();
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
 	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-	}
-
-	@Configuration
-	public class WebConfig {
-
-		@Bean
-		public WebMvcConfigurer corsConfigurer() {
-			return new WebMvcConfigurer() {
-				@Override
-				public void addCorsMappings(CorsRegistry registry) {
-					registry.addMapping("/**") // Allow all endpoints
-							.allowedOrigins("http://localhost:3000") // Your React app URL
-							.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-							.allowedHeaders("*")
-							.allowCredentials(true);
-				}
-			};
-		}
-	}
-
 }
