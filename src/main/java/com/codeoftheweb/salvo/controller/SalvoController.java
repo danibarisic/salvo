@@ -54,10 +54,14 @@ public class SalvoController {
 
         GamePlayer gamePlayer = gamePlayerOpt.get(); // If there is a gamePlayer, then it is retrieved via Optional.
 
-        if (authentication == null || !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Unauthorized access to game view"));
-        }
+        // TO DO
+        // if (authentication == null ||
+        // !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
+        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        // .body(Map.of("error", "Unauthorized access to game view"));
+        // }
+        System.out.println(authentication.getName());
+
         Game game = gamePlayer.getGame();
 
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -132,16 +136,19 @@ public class SalvoController {
     public Map<String, Object> getGames(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
 
+        // TO DO
         // If user is authenticated, add their player info
-        if (authentication != null && authentication.isAuthenticated()
-                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
-            Player player = playerRepository.findByEmail(authentication.getName());
-            response.put("player", Map.of(
-                    "id", player.getId(),
-                    "email", player.getEmail()));
-        } else {
-            response.put("player", null);
-        }
+
+        // if (authentication != null && authentication.isAuthenticated()
+        // && !(authentication instanceof
+        // org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+        // Player player = playerRepository.findByEmail(authentication.getName());
+        // response.put("player", Map.of(
+        // "id", player.getId(),
+        // "email", player.getEmail()));
+        // } else {
+        // response.put("player", null);
+        // }
 
         // Games list
         List<Map<String, Object>> games = gameRepository.findAll()
