@@ -263,4 +263,8 @@ public class SalvoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @GetMapping("/all-players")
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
 }
