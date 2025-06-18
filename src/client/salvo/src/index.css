@@ -35,6 +35,14 @@ ul {
   margin-bottom: 20px;
 }
 
+input,
+label,
+span,
+button {
+  padding: 5px;
+  font-size: 25px;
+}
+
 .grid-container {
   display: inline-block;
   margin: 20px;

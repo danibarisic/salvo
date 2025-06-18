@@ -19,6 +19,7 @@ public class Player {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String userName;
+  private String password;
   private String email;
 
   @OneToMany(mappedBy = "player", cascade = CascadeType.ALL)
@@ -30,9 +31,9 @@ public class Player {
   public Player() {
   }
 
-  public Player(String userName, String email) {
-    this.userName = userName;
+  public Player(String email, String password) {
     this.email = email;
+    this.password = password;
   }
 
   public Long getId() {
@@ -73,5 +74,13 @@ public class Player {
 
   public void setScores(List<Score> scores) {
     this.scores = scores;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
   }
 }

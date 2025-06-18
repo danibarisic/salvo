@@ -3,11 +3,21 @@ package com.codeoftheweb.salvo;
 import java.time.LocalDateTime;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
 import com.codeoftheweb.salvo.controller.SalvoController;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 public class SalvoApplication implements CommandLineRunner {
@@ -16,7 +26,7 @@ public class SalvoApplication implements CommandLineRunner {
 	@Autowired
 	private PlayerRepository playerRepository;
 
-	// Connecting the different repos.
+	// Injecting the different repos.
 	@Autowired
 	private GameRepository gameRepository;
 	@Autowired
@@ -27,6 +37,8 @@ public class SalvoApplication implements CommandLineRunner {
 	private SalvoRepository salvoRepository;
 	@Autowired
 	private ScoreRepository scoreRepository;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 	SalvoApplication(SalvoController salvoController) {
 		this.salvoController = salvoController;
@@ -39,10 +51,10 @@ public class SalvoApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Creating the 4 players.
-		Player jack = new Player("Jack Bauer", "j.bauer@ctu.gov");
-		Player chloe = new Player("Chloe O'Brian", "c.obrian@ctu.gov");
-		Player kim = new Player("Kim Bauer", "kim_bauer@gmail.com");
-		Player tony = new Player("Tony Almeida", "t.almeida@ctu.gov");
+		Player jack = new Player("j.bauer@ctu.gov", passwordEncoder.encode("24"));
+		Player chloe = new Player("c.obrian@ctu.gov", passwordEncoder.encode("42"));
+		Player kim = new Player("kim_bauer@gmail.com", passwordEncoder.encode("kb"));
+		Player tony = new Player("t.almeida@ctu.gov", passwordEncoder.encode("mole"));
 
 		// ...And saving them to the repo.
 		playerRepository.save(jack);
@@ -343,5 +355,32 @@ public class SalvoApplication implements CommandLineRunner {
 		score8.setPlayer(gpj4.getPlayer());
 		game4.getScores().add(score8);
 		scoreRepository.save(score8);
+	}
+
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**") // Allow all endpoints
+						.allowedOrigins("http://localhost:3000")
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
+						.allowCredentials(true);
+			}
+		};
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://localhost:3000"));
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", config);
+		return source;
 	}
 }

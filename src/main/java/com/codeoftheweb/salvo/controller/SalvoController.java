@@ -6,12 +6,17 @@ import com.codeoftheweb.salvo.Score;
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
 import com.codeoftheweb.salvo.GamePlayer;
+import com.codeoftheweb.salvo.PlayerDTO;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,17 +42,26 @@ public class SalvoController {
     private GamePlayerRepository gamePlayerRepository;
 
     @GetMapping("/game_view/{gpId}")
-    public ResponseEntity<Map<String, Object>> getGameView(@PathVariable Long gpId) {
-        Optional<GamePlayer> gamePlayerOpt = gamePlayerRepository.findById(gpId); // Optional acts as a safety in case
-                                                                                  // there is no gamePlayer found.
+    public ResponseEntity<Map<String, Object>> getGameView(@PathVariable Long gpId, Authentication authentication) {
+        Optional<GamePlayer> gamePlayerOpt = gamePlayerRepository.findById(gpId);
+        // Optional acts as a safety in case there is no gamePlayer found.
 
         if (!gamePlayerOpt.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Map.of("error", "GamePlayer not found")); // If no gamePlayer then an error message is created
-                                                                    // as JSON.
+                    .body(Map.of("error", "GamePlayer not found"));
+            // If no gamePlayer then an error message is created as JSON.
         }
 
         GamePlayer gamePlayer = gamePlayerOpt.get(); // If there is a gamePlayer, then it is retrieved via Optional.
+
+        // TO DO
+        // if (authentication == null ||
+        // !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
+        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        // .body(Map.of("error", "Unauthorized access to game view"));
+        // }
+        System.out.println(authentication.getName());
+
         Game game = gamePlayer.getGame();
 
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -73,6 +87,7 @@ public class SalvoController {
                 .collect(Collectors.toList());
 
         dto.put("gamePlayers", gamePlayers);
+
         // Create a List of Maps for scores, as long as scores from Game Entity is not
         // null.
         List<Map<String, Object>> scores = (game.getScores() != null) ? game.getScores().stream()
@@ -83,7 +98,7 @@ public class SalvoController {
                     return scoreDto;
                 })
                 .collect(Collectors.toList())
-                : List.of(); // If scores = null than an empty list is returned.
+                : List.of(); // If scores = null then an empty list is returned.
 
         dto.put("scores", scores);
 
@@ -118,18 +133,32 @@ public class SalvoController {
     }
 
     @GetMapping("/games")
-    public List<Map<String, Object>> getGames() {
-        // Create list of all games from the gameRepository.
-        return gameRepository
-                .findAll()
+    public Map<String, Object> getGames(Authentication authentication) {
+        Map<String, Object> response = new LinkedHashMap<>();
+
+        // TO DO
+        // If user is authenticated, add their player info
+
+        // if (authentication != null && authentication.isAuthenticated()
+        // && !(authentication instanceof
+        // org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+        // Player player = playerRepository.findByEmail(authentication.getName());
+        // response.put("player", Map.of(
+        // "id", player.getId(),
+        // "email", player.getEmail()));
+        // } else {
+        // response.put("player", null);
+        // }
+
+        // Games list
+        List<Map<String, Object>> games = gameRepository.findAll()
                 .stream()
                 .map(game -> {
-                    // Creating a map called dto with key object pairs.
                     Map<String, Object> dto = new LinkedHashMap<>();
                     dto.put("id", game.getId());
                     dto.put("created", game.getCreatedDate());
 
-                    // Creates a List of maps, and containes another nested map for players.
+                    // GamePlayers
                     List<Map<String, Object>> gamePlayers = game.getGamePlayers()
                             .stream()
                             .map(gamePlayer -> {
@@ -148,23 +177,24 @@ public class SalvoController {
 
                     dto.put("gamePlayers", gamePlayers);
 
-                    // If Scores from Game Entity isn't null, then it will create a stream and map
-                    // the appropriate keys and objects as scoreDto.
-                    List<Map<String, Object>> scores = (game.getScores() != null) ? game.getScores().stream()
-                            .map(score -> {
-                                Map<String, Object> scoreDto = new LinkedHashMap<>();
-                                scoreDto.put("playerId", score.getPlayer().getId());
-                                scoreDto.put("score", score.getScore());
-                                return scoreDto;
-                            })
-                            .collect(Collectors.toList())
-                            : List.of();// if null will return empty list.
+                    // Scores
+                    List<Map<String, Object>> scores = (game.getScores() != null)
+                            ? game.getScores().stream()
+                                    .map(score -> {
+                                        Map<String, Object> scoreDto = new LinkedHashMap<>();
+                                        scoreDto.put("playerId", score.getPlayer().getId());
+                                        scoreDto.put("score", score.getScore());
+                                        return scoreDto;
+                                    }).collect(Collectors.toList())
+                            : List.of();
 
                     dto.put("scores", scores);
-
                     return dto;
-                })
-                .collect(Collectors.toList());
+
+                }).collect(Collectors.toList());
+
+        response.put("games", games);
+        return response;
     }
 
     @GetMapping("/leaderboard")
@@ -194,4 +224,51 @@ public class SalvoController {
         }).collect(Collectors.toList());
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
+        Player player = playerRepository.findByEmail(email);
+
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "No player found with that email"));
+        }
+
+        if (!player.getPassword().equals(password)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Incorrect password"));
+        }
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", player.getId());
+        response.put("email", player.getEmail());
+        response.put("message", "Login successful");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/players")
+    public ResponseEntity<Map<String, Object>> registerPlayer(
+            @RequestParam String email,
+            @RequestParam String password) {
+        if (playerRepository.findByEmail(email) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("Error", "Email already in use"));
+        }
+        Player newPlayer = new Player(email, password);
+        playerRepository.save(newPlayer);
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("id", newPlayer.getId());
+        response.put("email", newPlayer.getEmail());
+        response.put("message", "Player registered successfully");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/players")
+    public List<PlayerDTO> getPlayer() {
+        return playerRepository.findAll().stream()
+                .map(player -> new PlayerDTO(player.getId(), player.getEmail()))
+                .toList();
+    }
 }
