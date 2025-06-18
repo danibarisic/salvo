@@ -86,6 +86,46 @@ export const Login = () => {
             setMessage("Error Logging Out");
         }
     }
+
+    const HandleRegister = async (e) => {
+        e.preventDefault();
+        setMessage("");
+
+        if (!email.trim() || !password.trim()) {
+            setMessage("Please enter Email and Password");
+            return;
+        }
+
+        setLoading(true);
+
+        const formBody = new URLSearchParams();
+        formBody.append("email", email);
+        formBody.append("password", password);
+
+        try {
+            const response = await fetch("http://localhost:8080/api/players", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: formBody.toString(),
+            });
+
+            if (response.status === 201) {
+                setMessage("Registration Successfull");
+            } else {
+                const errorData = await response.json();
+                setMessage(errorData.error || "Registration Failed");
+            }
+        } catch (error) {
+            console.error(error);
+            setMessage("Error during registration");
+        } finally {
+            setLoading(false);
+        }
+
+
+    }
     return (
         <form onSubmit={HandleLogin}>
             <label>
@@ -115,6 +155,10 @@ export const Login = () => {
             {isLoggedIn && (
                 <button onClick={HandleLogout}>Log Out</button>
             )}
+
+            <button onClick={HandleRegister} disabled={loading}>
+                {loading ? "Registering..." : "Create Account"}
+            </button>
 
             <span>{message}</span>
         </form>
