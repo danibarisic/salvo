@@ -231,7 +231,6 @@ public class SalvoController {
                     .body(Map.of("error", "Incorrect password"));
         }
 
-        // You can customize the response as needed
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("id", player.getId());
         response.put("email", player.getEmail());
