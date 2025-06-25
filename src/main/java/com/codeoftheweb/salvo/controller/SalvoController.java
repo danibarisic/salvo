@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.controller;
 import com.codeoftheweb.salvo.GameRepository;
 import com.codeoftheweb.salvo.PlayerRepository;
 import com.codeoftheweb.salvo.Score;
+
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
 import com.codeoftheweb.salvo.GamePlayer;
@@ -16,11 +17,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
@@ -40,6 +42,8 @@ public class SalvoController {
     private PlayerRepository playerRepository;
     @Autowired
     private GamePlayerRepository gamePlayerRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping("/game_view/{gpId}")
     public ResponseEntity<Map<String, Object>> getGameView(@PathVariable Long gpId, Authentication authentication) {
@@ -54,12 +58,11 @@ public class SalvoController {
 
         GamePlayer gamePlayer = gamePlayerOpt.get(); // If there is a gamePlayer, then it is retrieved via Optional.
 
-        // TO DO
-        // if (authentication == null ||
-        // !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
-        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        // .body(Map.of("error", "Unauthorized access to game view"));
-        // }
+        if (authentication == null ||
+                !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Unauthorized access to game view"));
+        }
         System.out.println(authentication.getName());
 
         Game game = gamePlayer.getGame();
@@ -132,23 +135,25 @@ public class SalvoController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/current-player")
+    public ResponseEntity<?> getCurrentPlayer(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+        }
+
+        Player player = playerRepository.findByEmail(authentication.getName());
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player not found");
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "id", player.getId(),
+                "email", player.getEmail()));
+    }
+
     @GetMapping("/games")
     public Map<String, Object> getGames(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
-
-        // TO DO
-        // If user is authenticated, add their player info
-
-        // if (authentication != null && authentication.isAuthenticated()
-        // && !(authentication instanceof
-        // org.springframework.security.authentication.AnonymousAuthenticationToken)) {
-        // Player player = playerRepository.findByEmail(authentication.getName());
-        // response.put("player", Map.of(
-        // "id", player.getId(),
-        // "email", player.getEmail()));
-        // } else {
-        // response.put("player", null);
-        // }
 
         // Games list
         List<Map<String, Object>> games = gameRepository.findAll()
@@ -224,28 +229,6 @@ public class SalvoController {
         }).collect(Collectors.toList());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
-        Player player = playerRepository.findByEmail(email);
-
-        if (player == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "No player found with that email"));
-        }
-
-        if (!player.getPassword().equals(password)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Incorrect password"));
-        }
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("id", player.getId());
-        response.put("email", player.getEmail());
-        response.put("message", "Login successful");
-
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping("/players")
     public ResponseEntity<Map<String, Object>> registerPlayer(
             @RequestParam String email,
@@ -254,7 +237,9 @@ public class SalvoController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("Error", "Email already in use"));
         }
-        Player newPlayer = new Player(email, password);
+
+        String encodedPassword = passwordEncoder.encode(password);
+        Player newPlayer = new Player(email, encodedPassword);
         playerRepository.save(newPlayer);
 
         Map<String, Object> response = new LinkedHashMap<>();
