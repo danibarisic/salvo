@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
@@ -202,6 +201,32 @@ public class SalvoController {
         return response;
     }
 
+    @PostMapping("/games")
+    public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "You must be logged in to create a game"));
+        }
+
+        Player player = playerRepository.findByEmail(authentication.getName());
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Player not found"));
+        }
+
+        // Create a new game
+        Game newGame = new Game();
+        gameRepository.save(newGame);
+
+        // Create a new GamePlayer for the user
+        GamePlayer newGamePlayer = new GamePlayer(newGame, player);
+        gamePlayerRepository.save(newGamePlayer);
+
+        // Return the new GamePlayer ID
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("gpid", newGamePlayer.getId()));
+    }
+
     @GetMapping("/leaderboard")
     public List<Map<String, Object>> getLeaderboard() {
         List<Player> players = playerRepository.findAll(); // Create a list of all the players from the
@@ -255,5 +280,39 @@ public class SalvoController {
         return playerRepository.findAll().stream()
                 .map(player -> new PlayerDTO(player.getId(), player.getEmail()))
                 .toList();
+    }
+
+    @PostMapping("/game/{gameId}/players")
+    public ResponseEntity<?> joinGame(@PathVariable Long gameId, Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Get current player from authentication
+        Player currentPlayer = playerRepository.findByEmail(authentication.getName());
+        if (currentPlayer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Find the game
+        Optional<Game> optionalGame = gameRepository.findById(gameId);
+        if (!optionalGame.isPresent()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "No such game"));
+        }
+
+        Game game = optionalGame.get();
+
+        // Check if game is already full
+        if (game.getGamePlayers().size() >= 2) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Game is full"));
+        }
+
+        // Create and save GamePlayer
+        GamePlayer newGamePlayer = new GamePlayer(game, currentPlayer);
+        gamePlayerRepository.save(newGamePlayer);
+
+        // Return new GamePlayer ID
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("gpid", newGamePlayer.getId()));
     }
 }
