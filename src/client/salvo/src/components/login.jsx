@@ -1,166 +1,127 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export const Login = () => {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+export function Login({ onLogin }) {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
-    // Check session status on initial load
-    useEffect(() => {
-        fetch("http://localhost:8080/api/players", {
-            credentials: "include",
-        })
-            .then((res) => setIsLoggedIn(res.ok))
-            .catch(() => setIsLoggedIn(false))
-    }, []);
+    const navigate = useNavigate();
 
-    const HandleLogin = async (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        setMessage("");
-
-        //validation to ensure both fields are entered.
-        if (!email.trim() || !password.trim()) {
-            setMessage("Please enter both email and password.");
-            return;
-        }
-
-        //Setting loading to true so user doesn't have to refresh if empty fields are submitted.
-        setLoading(true);
-
-        const formBody = new URLSearchParams();
-        formBody.append('username', email);
-        formBody.append('password', password);
+        setErrorMessage('');
+        setSuccessMessage('');
 
         try {
-            const response = await fetch('http://localhost:8080/login', {
+            const response = await fetch('http://localhost:8080/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: formBody.toString(),
+                credentials: 'include',
+                body: new URLSearchParams({ email, password }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Login failed');
+            }
+
+            // Fetch current user after login
+            const res = await fetch('http://localhost:8080/api/current-player', {
                 credentials: 'include',
             });
 
-            if (response.ok) {
-                console.log("Login Successful");
-                setMessage("Login Successful");
-                setIsLoggedIn(true);
-            } else if (response.status === 401) {
-                console.log("Login Failed: Unauthorized")
-                setMessage("Login Failed: Unauthorized")
-                window.location.href = "/login"
+            if (res.ok) {
+                const userData = await res.json();
+                if (onLogin) onLogin(userData);
+                setSuccessMessage('Login successful');
+
+                // Navigate to game list page (root path)
+                navigate('/');
+
             } else {
-                console.log("Login Unsuccessful");
-                setMessage("Login Failed");
+                throw new Error('Could not fetch user after login.');
             }
-        } catch (error) {
-            console.error(error);
-            setMessage("Login Error");
-        } finally {
-            setLoading(false);
+        } catch (err) {
+            setErrorMessage(err.message || 'Login failed');
         }
     };
 
-
-    const HandleLogout = async (e) => {
-        e.preventDefault();
-        setMessage("");
-
-        try {
-            const response = await fetch("http://localhost:8080/api/logout", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (response.ok) {
-                console.log("Logout Successful!");
-                setMessage("Logout Successful!");
-                window.location.href = "/login"
-            }
-        } catch (error) {
-            console.error(error);
-            setMessage("Error Logging Out");
-        }
-    }
-
-    const HandleRegister = async (e) => {
-        e.preventDefault();
-        setMessage("");
-
-        if (!email.trim() || !password.trim()) {
-            setMessage("Please enter Email and Password");
-            return;
-        }
-
-        setLoading(true);
-
-        const formBody = new URLSearchParams();
-        formBody.append("email", email);
-        formBody.append("password", password);
+    const handleRegister = async () => {
+        setErrorMessage('');
+        setSuccessMessage('');
 
         try {
-            const response = await fetch("http://localhost:8080/api/players", {
-                method: "POST",
+            const res = await fetch('http://localhost:8080/api/players', {
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: formBody.toString(),
+                credentials: 'include',
+                body: new URLSearchParams({ email, password }),
             });
 
-            if (response.status === 201) {
-                setMessage("Registration Successfull");
-            } else {
-                const errorData = await response.json();
-                setMessage(errorData.error || "Registration Failed");
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || 'Registration failed');
             }
-        } catch (error) {
-            console.error(error);
-            setMessage("Error during registration");
-        } finally {
-            setLoading(false);
+
+            setSuccessMessage('Registration successful. You can now log in.');
+        } catch (err) {
+            setErrorMessage(err.message || 'Registration failed');
         }
+    };
 
-
-    }
     return (
-        <form onSubmit={HandleLogin}>
-            <label>
-                Email:
-                <input
-                    type='text'
-                    name='email'
-                    placeholder='example@hotmail.com'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-            </label>
+        <div className="login-container">
+            <h2 className="login-title">Login</h2>
 
-            <label>
-                Password:
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="123"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-            </label>
+            {errorMessage && <p className="login-error">{errorMessage}</p>}
+            {successMessage && <p className="login-success">{successMessage}</p>}
 
-            <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
+            <form onSubmit={handleLogin} className="login-form">
+                <div className="form-group">
+                    <label htmlFor="email" className="form-label">
+                        Email:
+                    </label>
+                    <input
+                        id="email"
+                        type="text"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="form-input"
+                        placeholder="Enter your email"
+                    />
+                </div>
 
-            {isLoggedIn && (
-                <button onClick={HandleLogout} disabled={loading}>Log Out</button>
-            )}
+                <div className="form-group">
+                    <label htmlFor="password" className="form-label">
+                        Password:
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        className="form-input"
+                        placeholder="Enter your password"
+                    />
+                </div>
 
-            <button onClick={HandleRegister} disabled={loading}>
-                {loading ? "Registering..." : "Create Account"}
-            </button>
-
-            <span>{message}</span>
-        </form>
+                <div className="button-group">
+                    <button type="submit" className="btn btn-primary">
+                        Login
+                    </button>
+                    <button type="button" onClick={handleRegister} className="btn btn-secondary">
+                        Register
+                    </button>
+                </div>
+            </form>
+        </div>
     );
-};
+}

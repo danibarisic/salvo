@@ -3,6 +3,7 @@ package com.codeoftheweb.salvo.controller;
 import com.codeoftheweb.salvo.GameRepository;
 import com.codeoftheweb.salvo.PlayerRepository;
 import com.codeoftheweb.salvo.Score;
+
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
 import com.codeoftheweb.salvo.GamePlayer;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,8 @@ public class SalvoController {
     private PlayerRepository playerRepository;
     @Autowired
     private GamePlayerRepository gamePlayerRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @GetMapping("/game_view/{gpId}")
     public ResponseEntity<Map<String, Object>> getGameView(@PathVariable Long gpId, Authentication authentication) {
@@ -54,12 +57,11 @@ public class SalvoController {
 
         GamePlayer gamePlayer = gamePlayerOpt.get(); // If there is a gamePlayer, then it is retrieved via Optional.
 
-        // TO DO
-        // if (authentication == null ||
-        // !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
-        // return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-        // .body(Map.of("error", "Unauthorized access to game view"));
-        // }
+        if (authentication == null ||
+                !gamePlayer.getPlayer().getEmail().equals(authentication.getName())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Unauthorized access to game view"));
+        }
         System.out.println(authentication.getName());
 
         Game game = gamePlayer.getGame();
@@ -132,23 +134,25 @@ public class SalvoController {
         return ResponseEntity.ok(dto);
     }
 
+    @GetMapping("/current-player")
+    public ResponseEntity<?> getCurrentPlayer(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+        }
+
+        Player player = playerRepository.findByEmail(authentication.getName());
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player not found");
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "id", player.getId(),
+                "email", player.getEmail()));
+    }
+
     @GetMapping("/games")
     public Map<String, Object> getGames(Authentication authentication) {
         Map<String, Object> response = new LinkedHashMap<>();
-
-        // TO DO
-        // If user is authenticated, add their player info
-
-        // if (authentication != null && authentication.isAuthenticated()
-        // && !(authentication instanceof
-        // org.springframework.security.authentication.AnonymousAuthenticationToken)) {
-        // Player player = playerRepository.findByEmail(authentication.getName());
-        // response.put("player", Map.of(
-        // "id", player.getId(),
-        // "email", player.getEmail()));
-        // } else {
-        // response.put("player", null);
-        // }
 
         // Games list
         List<Map<String, Object>> games = gameRepository.findAll()
@@ -197,6 +201,32 @@ public class SalvoController {
         return response;
     }
 
+    @PostMapping("/games")
+    public ResponseEntity<Map<String, Object>> createGame(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "You must be logged in to create a game"));
+        }
+
+        Player player = playerRepository.findByEmail(authentication.getName());
+        if (player == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "Player not found"));
+        }
+
+        // Create a new game
+        Game newGame = new Game();
+        gameRepository.save(newGame);
+
+        // Create a new GamePlayer for the user
+        GamePlayer newGamePlayer = new GamePlayer(newGame, player);
+        gamePlayerRepository.save(newGamePlayer);
+
+        // Return the new GamePlayer ID
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("gpid", newGamePlayer.getId()));
+    }
+
     @GetMapping("/leaderboard")
     public List<Map<String, Object>> getLeaderboard() {
         List<Player> players = playerRepository.findAll(); // Create a list of all the players from the
@@ -224,28 +254,6 @@ public class SalvoController {
         }).collect(Collectors.toList());
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestParam String email, @RequestParam String password) {
-        Player player = playerRepository.findByEmail(email);
-
-        if (player == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "No player found with that email"));
-        }
-
-        if (!player.getPassword().equals(password)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Incorrect password"));
-        }
-
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("id", player.getId());
-        response.put("email", player.getEmail());
-        response.put("message", "Login successful");
-
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping("/players")
     public ResponseEntity<Map<String, Object>> registerPlayer(
             @RequestParam String email,
@@ -254,7 +262,9 @@ public class SalvoController {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of("Error", "Email already in use"));
         }
-        Player newPlayer = new Player(email, password);
+
+        String encodedPassword = passwordEncoder.encode(password);
+        Player newPlayer = new Player(email, encodedPassword);
         playerRepository.save(newPlayer);
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -270,5 +280,39 @@ public class SalvoController {
         return playerRepository.findAll().stream()
                 .map(player -> new PlayerDTO(player.getId(), player.getEmail()))
                 .toList();
+    }
+
+    @PostMapping("/game/{gameId}/players")
+    public ResponseEntity<?> joinGame(@PathVariable Long gameId, Authentication authentication) {
+        // Check if user is authenticated
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Get current player from authentication
+        Player currentPlayer = playerRepository.findByEmail(authentication.getName());
+        if (currentPlayer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // Find the game
+        Optional<Game> optionalGame = gameRepository.findById(gameId);
+        if (!optionalGame.isPresent()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "No such game"));
+        }
+
+        Game game = optionalGame.get();
+
+        // Check if game is already full
+        if (game.getGamePlayers().size() >= 2) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Game is full"));
+        }
+
+        // Create and save GamePlayer
+        GamePlayer newGamePlayer = new GamePlayer(game, currentPlayer);
+        gamePlayerRepository.save(newGamePlayer);
+
+        // Return new GamePlayer ID
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("gpid", newGamePlayer.getId()));
     }
 }

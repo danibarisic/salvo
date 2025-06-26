@@ -32,7 +32,7 @@ export const Leaderboard = () => {
                 </thead>
                 <tbody>
                     {leaderboard.map(player => ( //maps through leaderboard and creates a row for each player with table cells with win/lose/tie count.
-                        <tr key={player.playerId}>
+                        <tr key={player.email}>
                             <td>{player.email}</td>
                             <td>{player.totalScore}</td>
                             <td>{player.wins}</td>

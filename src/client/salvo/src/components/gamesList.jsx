@@ -1,42 +1,81 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import '../index.css';
 
-export const GameList = () => {
+export const GameList = ({ player, onLogout }) => {
     const [games, setGames] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const res = await fetch("http://localhost:8080/api/game_view/1");
+        const fetchGames = async () => {
+            const res = await fetch('http://localhost:8080/api/games', { credentials: 'include' });
+            if (res.ok) {
                 const data = await res.json();
-                setGames(data);
-
-            } catch (error) {
-                console.error(error);
+                setGames(data.games);
             }
         };
-        fetchData();
+        fetchGames();
     }, []);
 
-    return (
-        <>
-            <h1>Salvo Games</h1>
-            <div className="gameBorder">
-                <ul>
-                    {games.map(game => (
-                        <li key={game.id}>
-                            <p>Game: {game.gameId} - Started on {new Date(game.created).toLocaleString()}</p>
-                            <p>Players:</p>
-                            <ul>
-                                {game.gamePlayers.map(gp => (
-                                    <li className="playerEmail" key={gp.id}>{gp.player.email}</li>
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            </div>
+    const GetGameLink = (gamePlayers) => {
+        const currentPlayerGP = gamePlayers.find(gp => gp.player.email === player?.email);
+        return currentPlayerGP ? `/game_view/${currentPlayerGP.id}` : null;
+    };
 
-        </>
+    const handleJoinGame = async (gameId) => {
+        try {
+            const res = await fetch(`http://localhost:8080/api/game/${gameId}/players`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                alert(errorData.error || 'Failed to join game');
+                return;
+            }
+
+            const data = await res.json();
+            navigate(`/game_view/${data.gpid}`);
+        } catch (err) {
+            alert('Network error: ' + err.message);
+        }
+    };
+
+    return (
+        <div className="game-list">
+            <h2>Games</h2>
+            <button onClick={onLogout}>Logout</button>
+            <ul className="game-list-container">
+                {games.map((game) => {
+                    const link = GetGameLink(game.gamePlayers);
+                    const players = game.gamePlayers.map(gp => gp.player.email).join(' vs ');
+
+                    return (
+                        <li key={game.id} className="game-list-item">
+                            <div className="game-info">
+                                {link ? (
+                                    <Link to={link} className="game-link">
+                                        Game #{game.id} ({players})
+                                    </Link>
+                                ) : (
+                                    <span className="game-link-nonclickable">
+                                        Game #{game.id} ({players})
+                                    </span>
+                                )}
+                            </div>
+                            {!link && game.gamePlayers.length === 1 && (
+                                <button
+                                    className="join-btn"
+                                    onClick={() => handleJoinGame(game.id)}
+                                >
+                                    Join
+                                </button>
+                            )}
+                        </li>
+                    );
+                })}
+            </ul>
+        </div>
     );
-}
+};

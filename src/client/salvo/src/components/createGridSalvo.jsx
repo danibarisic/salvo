@@ -4,9 +4,7 @@ import React from "react";
 export const CreateGridSalvo = ({ playerSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split(''); //Create an array of letters A - J.
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; //Create an array of digits 1 - 10.
-    const salvoLocations = new Set(
-        playerSalvoes.flatMap(salvo => salvo.locations)
-    )
+    const salvoLocations = new Set(playerSalvoes);
 
     return (
         <div className="grid-container">
