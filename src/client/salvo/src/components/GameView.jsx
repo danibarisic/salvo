@@ -62,7 +62,7 @@ export const GameInfo = ({ gpId, setPlayerShips, setSalvoLocations }) => {
 
 export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
     const letters = 'ABCDEFGHIJ'.split('');
-    const numbers = Array.from({ length: 10 }, (_, i) => i + 1);
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     const shipLocations = new Set(playerShips.flatMap(ship => ship.locations));
     const opponentHits = new Set(opponentSalvoes);
