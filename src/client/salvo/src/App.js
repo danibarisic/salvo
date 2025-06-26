@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import { Route, Routes, useNavigate, Navigate, useParams } from 'react-router-dom';
 import { GameInfo, CreateGrid } from './components/GameView.jsx';
-import { BrowserRouter as Router, Route, Routes, useParams } from 'react-router-dom';
 import { CreateGridSalvo } from './components/createGridSalvo.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
 import { Login } from './components/login.jsx';
+import { GameList } from './components/gamesList.jsx';
 
 function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, setSalvoLocations }) {
   const { gpId } = useParams();
 
-  if (!player) return <Login />;
+  if (!player) return <Navigate to="/" replace />;
 
   return (
     <>
@@ -26,72 +26,87 @@ function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, se
 
 function App() {
   const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
   const [playerShips, setPlayerShips] = useState([]);
-
   const [salvoLocations, setSalvoLocations] = useState({ player: [], opponent: [] });
 
-  useEffect(() => {
-    const fetchCurrentPlayer = async () => {
-      try {
-        const res = await fetch('http://localhost:8080/api/current-player', {
-          credentials: 'include',
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setUser(data);
-        }
-      } catch (err) {
-        console.log('Not logged in yet');
-      }
-    };
+  const navigate = useNavigate();
 
+  // Fetch current player info
+  const fetchCurrentPlayer = async () => {
+    setLoadingUser(true);
+    try {
+      const res = await fetch('http://localhost:8080/api/current-player', {
+        credentials: 'include',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCurrentPlayer();
   }, []);
 
+  // Handle logout and refresh user state
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        await fetchCurrentPlayer(); // Refresh user state after logout
+        navigate('/');
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
+  if (loadingUser) return <div>Loading user...</div>;
+
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={<h1>Please enter 'localhost:3000/game_view/PlayerId' into the URL</h1>}
-        />
-        <Route
-          path="/game_view/:gpId"
-          element={
-            user ? (
-              <GameViewRoute
-                player={user}
-                playerShips={playerShips}
-                salvoLocations={salvoLocations}
-                setPlayerShips={setPlayerShips}
-                setSalvoLocations={setSalvoLocations}
-              />
-            ) : (
-              <Login
-                onLogin={(userData) => {
-                  setUser(userData);
-                  console.log('Logged in as:', userData);
-                }}
-                onLogout={() => {
-                  setUser(null);
-                  console.log('Logged out');
-                }}
-              />
-            )
-          }
-        />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route
-          path="/login"
-          element={
-            <Login
-              onLogin={(userData) => setUser(userData)}
-              onLogout={() => setUser(null)}
+    <Routes>
+      <Route
+        path="/"
+        element={
+          user ? (
+            <GameList player={user} onLogout={handleLogout} />
+          ) : (
+            <Login onLogin={(userData) => setUser(userData)} />
+          )
+        }
+      />
+      <Route
+        path="/game_view/:gpId"
+        element={
+          user ? (
+            <GameViewRoute
+              player={user}
+              playerShips={playerShips}
+              salvoLocations={salvoLocations}
+              setPlayerShips={setPlayerShips}
+              setSalvoLocations={setSalvoLocations}
             />
-          }
-        />
-      </Routes>
-    </Router>
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
+      <Route path="/leaderboard" element={<Leaderboard />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
