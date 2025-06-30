@@ -5,24 +5,34 @@ import { CreateGridSalvo } from './components/createGridSalvo.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
 import { Login } from './components/login.jsx';
 import { GameList } from './components/gamesList.jsx';
+import { ShipPlacer } from './components/ShipPlacer.jsx';
 
 function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, setSalvoLocations }) {
   const { gpId } = useParams();
+  const allShipsPlaced = playerShips.length === 3;
 
   if (!player) return <Navigate to="/" replace />;
 
   return (
-    <>
-      <div className="game-layout">
-        <GameInfo
-          gpId={gpId}
-          setPlayerShips={setPlayerShips}
-          setSalvoLocations={setSalvoLocations}
-        />
-        <CreateGrid playerShips={playerShips} opponentSalvoes={salvoLocations.opponent || []} />
-        <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
-      </div>
-    </>
+    <div className="game-layout">
+      <GameInfo
+        gpId={gpId}
+        setPlayerShips={setPlayerShips}
+        setSalvoLocations={setSalvoLocations}
+      />
+
+      {!allShipsPlaced ? (
+        <ShipPlacer gamePlayerId={gpId} setPlayerShips={setPlayerShips} />
+      ) : (
+        <>
+          <CreateGrid
+            playerShips={playerShips}
+            opponentSalvoes={salvoLocations.opponent || []}
+          />
+          <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
+        </>
+      )}
+    </div>
   );
 }
 
