@@ -13,13 +13,15 @@ function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, se
 
   return (
     <>
-      <GameInfo
-        gpId={gpId}
-        setPlayerShips={setPlayerShips}
-        setSalvoLocations={setSalvoLocations}
-      />
-      <CreateGrid playerShips={playerShips} opponentSalvoes={salvoLocations.opponent || []} />
-      <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
+      <div className="game-layout">
+        <GameInfo
+          gpId={gpId}
+          setPlayerShips={setPlayerShips}
+          setSalvoLocations={setSalvoLocations}
+        />
+        <CreateGrid playerShips={playerShips} opponentSalvoes={salvoLocations.opponent || []} />
+        <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
+      </div>
     </>
   );
 }
