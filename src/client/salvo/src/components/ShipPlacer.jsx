@@ -62,13 +62,13 @@ export const ShipPlacer = ({ gamePlayerId }) => {
     const getShipLocations = (start, size, orientation) => {
         const [rowLetter, ...numPart] = start;
         const rowIndex = letters.indexOf(rowLetter);
-        const colIndex = parseInt(numPart.join("")) - 1;
+        const columnIndex = parseInt(numPart.join("")) - 1;
 
         let locations = [];
 
         for (let i = 0; i < size; i++) {
             const r = orientation === "V" ? rowIndex + i : rowIndex;
-            const c = orientation === "H" ? colIndex + i : colIndex;
+            const c = orientation === "H" ? columnIndex + i : columnIndex;
 
             if (r > 9 || c > 9) return null; // Out of bounds
 
@@ -81,7 +81,7 @@ export const ShipPlacer = ({ gamePlayerId }) => {
     // Helper function to check overlap
     const isOverlapping = (locations) => {
         const allOccupied = placedShips.flatMap(s => s.locations);
-        return locations.some(loc => allOccupied.includes(loc));
+        return locations.some(locations => allOccupied.includes(locations));
     };
 
     const handleCellClick = (cell) => {
@@ -145,13 +145,13 @@ export const ShipPlacer = ({ gamePlayerId }) => {
                         <div key={letter} className="row">
                             <div className="cell header-cell">{letter}</div>
                             {numbers.map(n => {
-                                const coord = `${letter}${n}`;
-                                const isShip = placedShips.some(s => s.locations.includes(coord));
+                                const coordinates = `${letter}${n}`;
+                                const isShip = placedShips.some(s => s.locations.includes(coordinates));
                                 return (
                                     <div
-                                        key={coord}
+                                        key={coordinates}
                                         className={`cell ${isShip ? "ship-cell" : ""}`}
-                                        onClick={() => handleCellClick(coord)}
+                                        onClick={() => handleCellClick(coordinates)}
                                     />
                                 );
                             })}
