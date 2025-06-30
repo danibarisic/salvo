@@ -80,9 +80,9 @@ export const CreateGrid = ({ playerShips = [], opponentSalvoes = [] }) => {
                 <div key={letter} className="row">
                     <div className="cell header-cell">{letter}</div>
                     {numbers.map(n => {
-                        const coord = `${letter}${n}`;
-                        const isShip = shipLocations.has(coord);
-                        const isHit = opponentHits.has(coord);
+                        const coordinates = `${letter}${n}`;
+                        const isShip = shipLocations.has(coordinates);
+                        const isHit = opponentHits.has(coordinates);
                         const isShipHit = isShip && isHit;
 
                         return (
