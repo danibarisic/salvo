@@ -6,9 +6,11 @@ import com.codeoftheweb.salvo.Score;
 
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
+import com.codeoftheweb.salvo.Ship;
 import com.codeoftheweb.salvo.GamePlayer;
 import com.codeoftheweb.salvo.PlayerDTO;
 import com.codeoftheweb.salvo.GamePlayerRepository;
+import com.codeoftheweb.salvo.ShipRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.stream.Collectors;
 import java.util.LinkedHashMap;
@@ -41,6 +44,8 @@ public class SalvoController {
     private PlayerRepository playerRepository;
     @Autowired
     private GamePlayerRepository gamePlayerRepository;
+    @Autowired
+    private ShipRepository shipRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -315,4 +320,38 @@ public class SalvoController {
         // Return new GamePlayer ID
         return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("gpid", newGamePlayer.getId()));
     }
+
+    @PostMapping("/game/{gamePlayerId}/ships")
+    public ResponseEntity<?> addShips(
+            @PathVariable Long gamePlayerId,
+            @RequestBody List<Ship> ships,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "you must be logged in"));
+        }
+
+        Player currentPlayer = playerRepository.findByEmail(authentication.getName());
+        if (currentPlayer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "invalid user"));
+        }
+
+        Optional<GamePlayer> gamePlayerOptional = gamePlayerRepository.findById(gamePlayerId);
+        if (gamePlayerOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "unauthorized access to game"));
+        }
+
+        GamePlayer gamePlayer = gamePlayerOptional.get();
+        if (!gamePlayer.getPlayer().getId().equals(currentPlayer.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ship already placed"));
+        }
+        if (!gamePlayer.getShips().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ship is already placed"));
+        }
+        for (Ship ship : ships) {
+            ship.setGamePlayer(gamePlayer);
+            shipRepository.save(ship);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }
