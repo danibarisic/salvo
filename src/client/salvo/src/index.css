@@ -373,17 +373,22 @@ h3 {
   color: #222
 }
 
-.salvo-selectable-cell {
-  background-color: #4a90e2;
+.salvo-cell {
+  background-color: #5f8bd2;
+  /* your base blue */
+  border: 1px solid #3a5ca3;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.salvo-fired-cell {
-  background-color: #264d73;
+.salvo-cell.already-fired {
+  background-color: #888;
+  /* gray for previously fired */
   cursor: not-allowed;
 }
 
-.salvo-selected-cell {
+.salvo-cell.selected {
   background-color: #f57c00;
-  box-shadow: 0 0 8px 2px rgba(245, 124, 0, 0.7);
+  /* orange for selected shots */
+  border: 2px solid #e65100;
 }
