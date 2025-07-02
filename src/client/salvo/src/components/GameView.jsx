@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { ShipPlacer } from './ShipPlacer.jsx';
 import { SalvoPlacer } from './SalvoPlacer.jsx';
 
@@ -7,56 +7,55 @@ export const GameView = ({ gpId, playerShips, setPlayerShips, salvoLocations, se
     const [currentPlayerEmail, setCurrentPlayerEmail] = useState('');
     const [gamePlayerId, setGamePlayerId] = useState(null);
 
-    useEffect(() => {
+    const fetchGameData = useCallback(async () => {
         if (!user || !user.id) return;
-        const fetchGameData = async () => {
-            try {
-                const response = await fetch(`http://localhost:8080/api/game_view/${gpId}`, {
-                    credentials: 'include',
-                });
-                if (!response.ok) throw new Error('Failed to fetch game data');
 
-                const data = await response.json();
-                setGameData(data);
+        try {
+            const response = await fetch(`http://localhost:8080/api/game_view/${gpId}`, {
+                credentials: 'include',
+            });
+            if (!response.ok) throw new Error('Failed to fetch game data');
 
-                setPlayerShips(data.ships || []);
+            const data = await response.json();
+            setGameData(data);
 
-                // Find the gamePlayer matching the logged in user ID
+            setPlayerShips(data.ships || []);
 
-                const thisGamePlayer = data.gamePlayers?.find(gp => gp.player.id === user.id);
+            const thisGamePlayer = data.gamePlayers?.find(gp => gp.player.id === user.id);
 
-                if (!thisGamePlayer) {
-                    console.error("Current user not found in game players");
-                    setCurrentPlayerEmail('Unknown player');
-                    setGamePlayerId(null);
-                    return;
-                }
-
-                setCurrentPlayerEmail(thisGamePlayer.player.email);
-                setGamePlayerId(thisGamePlayer.id);
-
-                const playerOnlyShips = (data.ships || []).filter(ship => ship.ownerId === thisGamePlayer.id);
-                setPlayerShips(playerOnlyShips);
-
-                const salvos = data.salvoes || [];
-                const playerSalvoes = salvos
-                    .filter(salvo => salvo.gamePlayer === thisGamePlayer.id)
-                    .flatMap(salvo => salvo.locations);
-                const opponentSalvoes = salvos
-                    .filter(salvo => salvo.gamePlayer !== thisGamePlayer.id)
-                    .flatMap(salvo => salvo.locations);
-
-                setSalvoLocations({
-                    player: playerSalvoes,
-                    opponent: opponentSalvoes,
-                });
-            } catch (error) {
-                console.error('Error fetching game data:', error);
+            if (!thisGamePlayer) {
+                console.error("Current user not found in game players");
+                setCurrentPlayerEmail('Unknown player');
+                setGamePlayerId(null);
+                return;
             }
-        };
 
+            setCurrentPlayerEmail(thisGamePlayer.player.email);
+            setGamePlayerId(thisGamePlayer.id);
+
+            const playerOnlyShips = (data.ships || []).filter(ship => ship.ownerId === thisGamePlayer.id);
+            setPlayerShips(playerOnlyShips);
+
+            const salvos = data.salvoes || [];
+            const playerSalvoes = salvos
+                .filter(salvo => salvo.gamePlayer === thisGamePlayer.id)
+                .flatMap(salvo => salvo.locations);
+            const opponentSalvoes = salvos
+                .filter(salvo => salvo.gamePlayer !== thisGamePlayer.id)
+                .flatMap(salvo => salvo.locations);
+
+            setSalvoLocations({
+                player: playerSalvoes,
+                opponent: opponentSalvoes,
+            });
+        } catch (error) {
+            console.error('Error fetching game data:', error);
+        }
+    }, [gpId, user, setPlayerShips, setSalvoLocations]);
+
+    useEffect(() => {
         fetchGameData();
-    }, [gpId, setPlayerShips, setSalvoLocations, user]);
+    }, [fetchGameData]);
 
     if (!gameData) return <p>Loading game info...</p>;
 
@@ -87,7 +86,7 @@ export const GameView = ({ gpId, playerShips, setPlayerShips, salvoLocations, se
                         gamePlayerId={gamePlayerId}
                         playerSalvoes={salvoLocations.player || []}
                         previouslyFired={salvoLocations.player || []}
-                        onSalvoSubmitted={() => window.location.reload()}
+                        salvoSubmitted={fetchGameData}
                     />
                 </>
             )}
