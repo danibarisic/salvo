@@ -368,3 +368,22 @@ button {
 .unclickable {
   color: grey;
 }
+
+h3 {
+  color: #222
+}
+
+.salvo-selectable-cell {
+  background-color: #4a90e2;
+  cursor: pointer;
+}
+
+.salvo-fired-cell {
+  background-color: #264d73;
+  cursor: not-allowed;
+}
+
+.salvo-selected-cell {
+  background-color: #f57c00;
+  box-shadow: 0 0 8px 2px rgba(245, 124, 0, 0.7);
+}
