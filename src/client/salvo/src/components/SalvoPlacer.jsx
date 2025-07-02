@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salvoSubmitted }) => {
     const [selectedCells, setSelectedCells] = useState([]);
@@ -50,8 +50,8 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
             setSelectedCells([]);
             try {
                 salvoSubmitted();
-            } catch (e) {
-                console.error("Error in salvoSubmitted callback:", e);
+            } catch (error) {
+                console.error(error);
             }
 
         } catch (error) {
