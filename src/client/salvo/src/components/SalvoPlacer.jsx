@@ -48,9 +48,14 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
 
             alert("Salvo submitted!");
             setSelectedCells([]);
-            salvoSubmitted();
+            try {
+                salvoSubmitted();
+            } catch (e) {
+                console.error("Error in salvoSubmitted callback:", e);
+            }
 
         } catch (error) {
+            console.error(error);
             alert("Network or server error with submission");
         }
     };
