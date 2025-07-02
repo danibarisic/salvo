@@ -160,14 +160,6 @@ export const ShipPlacer = ({ gamePlayerId, setPlayerShips }) => {
                                     key={cellId}
                                     className={`cell ${isShipCell ? "ship-cell" : ""}`}
                                     onClick={() => handleCellClick(cellId)}
-                                    role="button"
-                                    tabIndex={0}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter" || e.key === " ") {
-                                            handleCellClick(cellId);
-                                        }
-                                    }}
-                                    aria-label={`Cell ${cellId}`}
                                 ></div>
                             );
                         })}
