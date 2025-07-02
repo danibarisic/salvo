@@ -62,15 +62,22 @@ public class SalvoApplication implements CommandLineRunner {
 		playerRepository.save(kim);
 		playerRepository.save(tony);
 
-		// Creating 4 individual games with one hour time separation.
+		// Creating games with one hour time separation.
 		Game game1 = gameRepository.save(new Game("Game 1", LocalDateTime.now()));
 		Game game2 = gameRepository.save(new Game("Game 2", LocalDateTime.now().plusHours(1)));
 		Game game3 = gameRepository.save(new Game("Game 3", LocalDateTime.now().plusHours(2)));
 		Game game4 = gameRepository.save(new Game("Game 4", LocalDateTime.now().plusHours(3)));
 		Game game5 = gameRepository.save(new Game("Game 5", LocalDateTime.now().plusHours(4)));
 		Game game6 = gameRepository.save(new Game("Game 6", LocalDateTime.now().plusHours(5)));
-		Game game7 = gameRepository.save(new Game("Game 7", LocalDateTime.now().plusHours(5)));
-		Game game8 = gameRepository.save(new Game("Game 8", LocalDateTime.now().plusHours(5)));
+		Game game7 = gameRepository.save(new Game("Game 7", LocalDateTime.now().plusHours(6)));
+		Game game8 = gameRepository.save(new Game("Game 8", LocalDateTime.now().plusHours(7)));
+		Game game9 = gameRepository.save(new Game("Game 9", LocalDateTime.now().plusHours(8)));
+		Game game10 = gameRepository.save(new Game("Game 10", LocalDateTime.now().plusHours(9)));
+		Game game11 = gameRepository.save(new Game("Game 11", LocalDateTime.now().plusHours(10)));
+		Game game12 = gameRepository.save(new Game("Game 12", LocalDateTime.now().plusHours(11)));
+		Game game13 = gameRepository.save(new Game("Game 13", LocalDateTime.now().plusHours(12)));
+		Game game14 = gameRepository.save(new Game("Game 14", LocalDateTime.now().plusHours(13)));
+		Game game15 = gameRepository.save(new Game("Game 15", LocalDateTime.now().plusHours(14)));
 
 		// ...And saving them to different games.
 		GamePlayer gpj1 = gamePlayerRepository.save(new GamePlayer(game1, jack));
@@ -216,7 +223,7 @@ public class SalvoApplication implements CommandLineRunner {
 		destroyer8.setGamePlayer(gpk8);
 		shipRepository.save(destroyer8);
 
-		Ship patrolBoat12 = new Ship("Patrol Boat", Arrays.asList("C6", "C7"));
+		Ship patrolBoat12 = new Ship("Patrol Boat", Arrays.asList("C7", "C8"));
 		gpk8.getShips().add(patrolBoat12);
 		patrolBoat12.setGamePlayer(gpk8);
 		shipRepository.save(patrolBoat12);

@@ -1,37 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate, Navigate, useParams } from 'react-router-dom';
-import { GameInfo, CreateGrid } from './components/GameView.jsx';
+import { GameView } from './components/GameView.jsx';
 import { CreateGridSalvo } from './components/createGridSalvo.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
 import { Login } from './components/login.jsx';
 import { GameList } from './components/gamesList.jsx';
-import { ShipPlacer } from './components/ShipPlacer.jsx';
 
 function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, setSalvoLocations }) {
   const { gpId } = useParams();
-  const allShipsPlaced = playerShips.length === 3;
 
   if (!player) return <Navigate to="/" replace />;
 
   return (
     <div className="game-layout">
-      <GameInfo
+      <GameView
         gpId={gpId}
+        playerShips={playerShips}
         setPlayerShips={setPlayerShips}
+        salvoLocations={salvoLocations}
         setSalvoLocations={setSalvoLocations}
+        user={player}  // Pass logged-in user here!
       />
-
-      {!allShipsPlaced ? (
-        <ShipPlacer gamePlayerId={gpId} setPlayerShips={setPlayerShips} />
-      ) : (
-        <>
-          <CreateGrid
-            playerShips={playerShips}
-            opponentSalvoes={salvoLocations.opponent || []}
-          />
-          <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
-        </>
-      )}
+      <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
     </div>
   );
 }
@@ -44,20 +34,19 @@ function App() {
 
   const navigate = useNavigate();
 
-  // Fetch current player info
   const fetchCurrentPlayer = async () => {
     setLoadingUser(true);
     try {
-      const res = await fetch('http://localhost:8080/api/current-player', {
+      const response = await fetch('http://localhost:8080/api/current-player', {
         credentials: 'include',
       });
-      if (res.ok) {
-        const data = await res.json();
+      if (response.ok) {
+        const data = await response.json();
         setUser(data);
       } else {
         setUser(null);
       }
-    } catch (err) {
+    } catch (error) {
       setUser(null);
     } finally {
       setLoadingUser(false);
@@ -68,21 +57,20 @@ function App() {
     fetchCurrentPlayer();
   }, []);
 
-  // Handle logout and refresh user state
   const handleLogout = async () => {
     try {
-      const res = await fetch('http://localhost:8080/api/logout', {
+      const response = await fetch('http://localhost:8080/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
-      if (res.ok) {
-        await fetchCurrentPlayer(); // Refresh user state after logout
+      if (response.ok) {
+        await fetchCurrentPlayer();
         navigate('/');
       } else {
         console.error('Logout failed');
       }
-    } catch (err) {
-      console.error('Logout error:', err);
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   };
 

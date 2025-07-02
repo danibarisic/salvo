@@ -15,7 +15,47 @@ export function Login({ onLogin }) {
         setSuccessMessage('');
 
         try {
-            const response = await fetch('http://localhost:8080/api/login', {
+            const responseLogin = await fetch('http://localhost:8080/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include',
+                body: new URLSearchParams({ email, password }),
+            });
+
+            if (!responseLogin.ok) {
+                const errorText = await responseLogin.text();
+                throw new Error(errorText || 'Login failed');
+            }
+
+            // Fetch current user after login
+            const responseCP = await fetch('http://localhost:8080/api/current-player', {
+                credentials: 'include',
+            });
+
+            if (responseCP.ok) {
+                const userData = await responseCP.json();
+                if (onLogin) onLogin(userData);
+                setSuccessMessage('Login successful');
+
+                // Navigate to game list page (root path)
+                navigate('/');
+
+            } else {
+                throw new Error('Could not fetch user after login.');
+            }
+        } catch (error) {
+            setErrorMessage(error.message || 'Login failed');
+        }
+    };
+
+    const handleRegister = async () => {
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            const response = await fetch('http://localhost:8080/api/players', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -26,46 +66,6 @@ export function Login({ onLogin }) {
 
             if (!response.ok) {
                 const errorText = await response.text();
-                throw new Error(errorText || 'Login failed');
-            }
-
-            // Fetch current user after login
-            const res = await fetch('http://localhost:8080/api/current-player', {
-                credentials: 'include',
-            });
-
-            if (res.ok) {
-                const userData = await res.json();
-                if (onLogin) onLogin(userData);
-                setSuccessMessage('Login successful');
-
-                // Navigate to game list page (root path)
-                navigate('/');
-
-            } else {
-                throw new Error('Could not fetch user after login.');
-            }
-        } catch (err) {
-            setErrorMessage(err.message || 'Login failed');
-        }
-    };
-
-    const handleRegister = async () => {
-        setErrorMessage('');
-        setSuccessMessage('');
-
-        try {
-            const res = await fetch('http://localhost:8080/api/players', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                credentials: 'include',
-                body: new URLSearchParams({ email, password }),
-            });
-
-            if (!res.ok) {
-                const errorText = await res.text();
                 throw new Error(errorText || 'Registration failed');
             }
 

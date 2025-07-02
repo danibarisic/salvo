@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { ShipPlacer } from './ShipPlacer.jsx';
 
-export const GameInfo = ({ gpId, setPlayerShips, setSalvoLocations }) => {
+export const GameView = ({ gpId, playerShips, setPlayerShips, salvoLocations, setSalvoLocations, user }) => {
     const [gameData, setGameData] = useState(null);
     const [currentPlayerEmail, setCurrentPlayerEmail] = useState('');
+    const [gamePlayerId, setGamePlayerId] = useState(null);
 
     useEffect(() => {
+        if (!user || !user.id) return;
         const fetchGameData = async () => {
             try {
                 const response = await fetch(`http://localhost:8080/api/game_view/${gpId}`, {
@@ -17,18 +20,30 @@ export const GameInfo = ({ gpId, setPlayerShips, setSalvoLocations }) => {
 
                 setPlayerShips(data.ships || []);
 
-                const thisGamePlayer = data.gamePlayers.find(gp => gp.id === Number(gpId));
-                if (!thisGamePlayer) throw new Error("Game player not found");
+                // Find the gamePlayer matching the logged in user ID
+
+                const thisGamePlayer = data.gamePlayers?.find(gp => gp.player.id === user.id);
+
+                if (!thisGamePlayer) {
+                    console.error("Current user not found in game players");
+                    setCurrentPlayerEmail('Unknown player');
+                    setGamePlayerId(null);
+                    return;
+                }
 
                 setCurrentPlayerEmail(thisGamePlayer.player.email);
+                setGamePlayerId(thisGamePlayer.id);
+
+                const playerOnlyShips = (data.ships || []).filter(ship => ship.ownerId === thisGamePlayer.id);
+                setPlayerShips(playerOnlyShips);
 
                 const salvos = data.salvoes || [];
                 const playerSalvoes = salvos
-                    .filter(s => s.gamePlayer === thisGamePlayer.id)
-                    .flatMap(s => s.locations);
+                    .filter(salvo => salvo.gamePlayer === thisGamePlayer.id)
+                    .flatMap(salvo => salvo.locations);
                 const opponentSalvoes = salvos
-                    .filter(s => s.gamePlayer !== thisGamePlayer.id)
-                    .flatMap(s => s.locations);
+                    .filter(salvo => salvo.gamePlayer !== thisGamePlayer.id)
+                    .flatMap(salvo => salvo.locations);
 
                 setSalvoLocations({
                     player: playerSalvoes,
@@ -40,9 +55,11 @@ export const GameInfo = ({ gpId, setPlayerShips, setSalvoLocations }) => {
         };
 
         fetchGameData();
-    }, [gpId, setPlayerShips, setSalvoLocations]);
+    }, [gpId, setPlayerShips, setSalvoLocations, user]);
 
     if (!gameData) return <p>Loading game info...</p>;
+
+    const allShipsPlaced = (playerShips?.length || 0) >= 2;
 
     return (
         <div className="game-info">
@@ -56,6 +73,17 @@ export const GameInfo = ({ gpId, setPlayerShips, setSalvoLocations }) => {
                     ? gameData.gamePlayers.map(gp => gp.player?.email || 'Unknown').join(' vs ')
                     : 'No players found'}
             </p>
+
+            {!allShipsPlaced ? (
+                <ShipPlacer gamePlayerId={gamePlayerId} setPlayerShips={setPlayerShips} />
+            ) : (
+                <>
+                    <CreateGrid
+                        playerShips={playerShips}
+                        opponentSalvoes={salvoLocations.opponent || []}
+                    />
+                </>
+            )}
         </div>
     );
 };

@@ -1,3 +1,4 @@
+/* === Global Styles === */
 body {
   margin: 0;
   background-color: rgb(220, 220, 220);
@@ -5,11 +6,30 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* === General Input/Button Styles === */
+input,
+label,
+span,
+button {
+  padding: 5px;
+  font-size: 25px;
+  font-family: inherit;
+}
+
+/* === Game Layout === */
+.game-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Game Info === */
 .game-info-container {
   margin: 20px auto;
   max-width: 700px;
   background-color: rgb(154, 154, 154);
-  border: solid red 7px;
+  border: 7px solid red;
   border-radius: 10px;
   padding: 20px;
   box-sizing: border-box;
@@ -17,16 +37,14 @@ body {
 
 .welcome-header {
   background-color: #d32f2f;
-  /* dark red */
   color: white;
   padding: 25px 10px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 36px;
   font-weight: 700;
-  margin: 0 0 20px 0;
   text-align: center;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  margin: 0 0 20px 0;
 }
 
 .game-info h2,
@@ -42,14 +60,13 @@ body {
   color: #333;
   padding: 12px 15px;
   border-radius: 6px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  max-width: fit-content;
   margin: 0 auto 20px auto;
-  text-align: center;
+  max-width: fit-content;
 }
 
+/* === Player List === */
 .players-list {
   font-size: 20px;
   text-align: center;
@@ -57,19 +74,16 @@ body {
   color: #ffc107;
 }
 
+/* === Grid === */
 .grid-container {
   display: inline-block;
   margin: 20px;
-  font-family: sans-serif;
   user-select: none;
+  font-family: sans-serif;
 }
 
 .row {
   display: flex;
-}
-
-.salvo-cell {
-  background-color: #5f8bd2;
 }
 
 .cell {
@@ -82,16 +96,21 @@ body {
   text-align: center;
   line-height: 40px;
   box-sizing: border-box;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
   border-radius: 4px;
   box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.cell:hover {
+  background-color: #c4c4c4;
+  cursor: pointer;
+  transform: scale(1.05);
 }
 
 .header-cell {
   background-color: rgb(49, 49, 49);
   color: white;
   font-weight: bold;
-  user-select: none;
 }
 
 .corner {
@@ -99,9 +118,14 @@ body {
   border: none;
 }
 
+/* === Ship + Salvo Colors === */
 .ship-cell {
   background-color: #6ea270;
   /* Green */
+}
+
+.salvo-cell {
+  background-color: #5f8bd2;
 }
 
 .opponent-salvo-cell {
@@ -114,15 +138,7 @@ body {
   border: 4px solid #6ea270;
 }
 
-input,
-label,
-span,
-button {
-  padding: 5px;
-  font-size: 25px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
+/* === Leaderboard === */
 .leaderboard-container {
   max-width: 800px;
   margin: 2rem auto;
@@ -130,7 +146,6 @@ button {
   background-color: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: 'Segoe UI', sans-serif;
 }
 
 .leaderboard-container h2 {
@@ -162,15 +177,14 @@ button {
   background-color: #e8e8e8;
 }
 
+/* === Login === */
 .login-container {
   max-width: 400px;
   margin: 2rem auto;
   background-color: #fff;
-  /* white background */
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .login-title {
@@ -179,7 +193,6 @@ button {
   color: #333;
   margin-bottom: 1.5rem;
   border-bottom: 3px solid #e53935;
-  /* red underline */
   padding-bottom: 0.5rem;
 }
 
@@ -230,10 +243,10 @@ button {
 
 .form-input:focus {
   border-color: #e53935;
-  /* red highlight on focus */
   outline: none;
 }
 
+/* === Buttons === */
 .button-group {
   display: flex;
   justify-content: space-between;
@@ -267,15 +280,6 @@ button {
   background-color: #616161;
 }
 
-.logged-in-info {
-  text-align: center;
-}
-
-.welcome-text {
-  font-size: 1.25rem;
-  margin-bottom: 1rem;
-}
-
 .btn-logout {
   background-color: #757575;
   color: white;
@@ -286,46 +290,6 @@ button {
 
 .btn-logout:hover {
   background-color: #424242;
-}
-
-.clickable a {
-  color: green;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.unclickable {
-  color: grey;
-}
-
-.game-list-item {
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #ddd;
-  font-size: 16px;
-  line-height: 1.4;
-  background-color: white;
-  color: #222;
-}
-
-.game-info {
-  flex-grow: 1;
-}
-
-.game-link,
-.game-link-nonclickable {
-  font-size: 16px;
-  line-height: 1.4;
-  color: inherit;
-  text-decoration: none;
-  display: inline-block;
-  width: 100%;
-}
-
-.game-link:hover {
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 .join-btn {
@@ -349,6 +313,7 @@ button {
   background-color: #218838;
 }
 
+/* === Game List === */
 .game-list h2 {
   color: black;
   font-size: 2rem;
@@ -356,15 +321,50 @@ button {
   font-weight: bold;
 }
 
-.cell:hover {
-  background-color: #c4c4c4;
-  cursor: pointer;
-  transform: scale(1.05);
+.game-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #ddd;
+  font-size: 16px;
+  background-color: white;
+  color: #222;
 }
 
-.game-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.game-info {
+  flex-grow: 1;
+}
+
+.game-link,
+.game-link-nonclickable {
+  font-size: 16px;
+  color: inherit;
+  text-decoration: none;
+  width: 100%;
+  display: inline-block;
+}
+
+.game-link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* === Misc === */
+.logged-in-info {
+  text-align: center;
+}
+
+.welcome-text {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.clickable a {
+  color: green;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.unclickable {
+  color: grey;
 }

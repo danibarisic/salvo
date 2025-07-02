@@ -9,6 +9,7 @@ import com.codeoftheweb.salvo.Game;
 import com.codeoftheweb.salvo.Ship;
 import com.codeoftheweb.salvo.GamePlayer;
 import com.codeoftheweb.salvo.PlayerDTO;
+import com.codeoftheweb.salvo.ShipDTO;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 import com.codeoftheweb.salvo.ShipRepository;
 
@@ -324,7 +325,7 @@ public class SalvoController {
     @PostMapping("/game/{gamePlayerId}/ships")
     public ResponseEntity<?> addShips(
             @PathVariable Long gamePlayerId,
-            @RequestBody List<Ship> ships,
+            @RequestBody List<ShipDTO> shipDTOs,
             Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "you must be logged in"));
@@ -342,16 +343,18 @@ public class SalvoController {
 
         GamePlayer gamePlayer = gamePlayerOptional.get();
         if (!gamePlayer.getPlayer().getId().equals(currentPlayer.getId())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ship already placed"));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "unauthorized access to game"));
         }
         if (!gamePlayer.getShips().isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "ship is already placed"));
         }
-        for (Ship ship : ships) {
+        for (ShipDTO dto : shipDTOs) {
+            Ship ship = new Ship();
+            ship.setType(dto.getType());
+            ship.setLocation(dto.getLocations());
             ship.setGamePlayer(gamePlayer);
             shipRepository.save(ship);
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
 }
