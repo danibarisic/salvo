@@ -6,12 +6,14 @@ import com.codeoftheweb.salvo.Score;
 
 import com.codeoftheweb.salvo.Player;
 import com.codeoftheweb.salvo.Game;
+import com.codeoftheweb.salvo.Salvo;
 import com.codeoftheweb.salvo.Ship;
 import com.codeoftheweb.salvo.GamePlayer;
 import com.codeoftheweb.salvo.PlayerDTO;
 import com.codeoftheweb.salvo.ShipDTO;
 import com.codeoftheweb.salvo.GamePlayerRepository;
 import com.codeoftheweb.salvo.ShipRepository;
+import com.codeoftheweb.salvo.SalvoRepository;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,6 +49,8 @@ public class SalvoController {
     private GamePlayerRepository gamePlayerRepository;
     @Autowired
     private ShipRepository shipRepository;
+    @Autowired
+    private SalvoRepository salvoRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -357,4 +361,39 @@ public class SalvoController {
         }
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/games/players/{gamePlayerId}/salvos")
+    public ResponseEntity<Object> addSalvo(
+            @PathVariable Long gamePlayerId,
+            @RequestBody Salvo salvo,
+            Authentication authentication) {
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "unauthorized access to game"));
+        }
+
+        Player player = playerRepository.findByEmail(authentication.getName());
+        Optional<GamePlayer> optionalGamePlayer = gamePlayerRepository.findById(gamePlayerId);
+
+        if (optionalGamePlayer.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "unauthorized access to game"));
+        }
+        GamePlayer gamePlayer = optionalGamePlayer.get();
+
+        if (!gamePlayer.getPlayer().equals(player)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "user does not own this gameplayer"));
+        }
+        boolean turnExists = gamePlayer.getSalvoes().stream().anyMatch(s -> s.getTurnCount() == salvo.getTurnCount());
+
+        if (turnExists) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Salvo for this turn already exists"));
+        }
+
+        salvo.setGamePlayer(gamePlayer);
+        salvoRepository.save(salvo);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }
