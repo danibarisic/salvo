@@ -19,8 +19,8 @@ export const CreateGridSalvo = ({ playerSalvoes = [] }) => {
                 <div key={letter} className="row">
                     <div className="cell header-cell">{letter}</div>
                     {numbers.map(n => {
-                        const coord = `${letter}${n}`;
-                        const isSalvo = salvoLocations.has(coord);
+                        const coordinate = `${letter}${n}`;
+                        const isSalvo = salvoLocations.has(coordinate);
 
                         return (
                             <div
