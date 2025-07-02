@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ShipPlacer } from './ShipPlacer.jsx';
+import { SalvoPlacer } from './SalvoPlacer.jsx';
 
 export const GameView = ({ gpId, playerShips, setPlayerShips, salvoLocations, setSalvoLocations, user }) => {
     const [gameData, setGameData] = useState(null);
@@ -81,6 +82,12 @@ export const GameView = ({ gpId, playerShips, setPlayerShips, salvoLocations, se
                     <CreateGrid
                         playerShips={playerShips}
                         opponentSalvoes={salvoLocations.opponent || []}
+                    />
+                    <SalvoPlacer
+                        gamePlayerId={gamePlayerId}
+                        playerSalvoes={salvoLocations.player || []}
+                        previouslyFired={salvoLocations.player || []}
+                        onSalvoSubmitted={() => window.location.reload()}
                     />
                 </>
             )}
