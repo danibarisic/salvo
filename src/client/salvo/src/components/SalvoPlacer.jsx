@@ -29,7 +29,7 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
         const nextTurn = playerSalvoes.length + 1;
 
         try {
-            const response = await fetch(`/api/games/players/${gamePlayerId}/salvos`, {
+            const response = await fetch(`http://localhost:8080/api/games/players/${gamePlayerId}/salvos`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
