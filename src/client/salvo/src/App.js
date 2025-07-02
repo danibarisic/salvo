@@ -7,6 +7,7 @@ import { Login } from './components/login.jsx';
 import { GameList } from './components/gamesList.jsx';
 
 function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, setSalvoLocations }) {
+
   const { gpId } = useParams();
 
   if (!player) return <Navigate to="/" replace />;
@@ -21,7 +22,6 @@ function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, se
         setSalvoLocations={setSalvoLocations}
         user={player}  // Pass logged-in user here!
       />
-      <CreateGridSalvo playerSalvoes={salvoLocations.player || []} />
     </div>
   );
 }
