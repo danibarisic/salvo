@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
-export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salvoSubmitted }) => {
+export const SalvoPlacer = ({
+    gamePlayerId,
+    playerSalvoes = [],
+    previouslyFired = [],
+    salvoSubmitted,
+    hitHistory = [], // Defaults to empty array
+}) => {
     const [selectedCells, setSelectedCells] = useState([]);
     const maxShots = 5;
     const letters = 'ABCDEFGHIJ'.split('');
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+    // Build a set of all opponent hit locations from hitHistory
+    const opponentHitLocations = useMemo(() => {
+        const hits = new Set();
+        hitHistory?.forEach(turn => {
+            turn?.hitLocations?.forEach(loc => hits.add(loc));
+        });
+        return hits;
+    }, [hitHistory]);
 
     const toggleCell = (cell) => {
         if (previouslyFired.includes(cell)) return;
@@ -42,7 +57,7 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
             });
 
             if (!response.ok) {
-                alert("Error submiting salvo");
+                alert("Error submitting salvo");
                 return;
             }
 
@@ -62,6 +77,8 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
 
     const isSelected = (cell) => selectedCells.includes(cell);
     const isPreviouslyFired = (cell) => previouslyFired.includes(cell);
+    const isHit = (cell) => opponentHitLocations.has(cell);
+
     return (
         <div className="salvo-container">
             <h3>Select up to 5 shots</h3>
@@ -78,16 +95,20 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
                         <div className="cell header-cell">{letter}</div>
                         {numbers.map(n => {
                             const cellId = `${letter}${n}`;
-                            const isUsed = isPreviouslyFired(cellId);
-                            const isChosen = isSelected(cellId);
+                            const used = isPreviouslyFired(cellId);
+                            const chosen = isSelected(cellId);
+                            const hit = isHit(cellId);
 
                             return (
                                 <div
                                     key={cellId}
-                                    className={`cell salvo-cell 
-                                    ${isUsed ? 'already-fired' : ''}
-                                    ${isChosen ? 'selected' : ''}`}
+                                    className={`cell salvo-cell
+                                        ${used ? 'already-fired' : ''}
+                                        ${chosen ? 'selected' : ''}
+                                        ${hit ? 'hit-opponent-ship' : ''}
+                                    `}
                                     onClick={() => toggleCell(cellId)}
+                                    title={hit ? 'Hit opponent ship!' : ''}
                                 ></div>
                             );
                         })}
@@ -97,9 +118,10 @@ export const SalvoPlacer = ({ gamePlayerId, playerSalvoes, previouslyFired, salv
 
             <button
                 className="submit-button"
-                onClick={submitSalvo}>
+                onClick={submitSalvo}
+            >
                 Submit Salvo
             </button>
         </div>
     );
-}
+};
