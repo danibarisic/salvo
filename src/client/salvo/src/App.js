@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useNavigate, Navigate, useParams } from 'react-router-dom';
 import { GameView } from './components/GameView.jsx';
-import { CreateGridSalvo } from './components/createGridSalvo.jsx';
 import { Leaderboard } from './components/Leaderboard.jsx';
 import { Login } from './components/login.jsx';
 import { GameList } from './components/gamesList.jsx';
