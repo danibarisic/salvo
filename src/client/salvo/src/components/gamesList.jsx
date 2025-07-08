@@ -8,9 +8,9 @@ export const GameList = ({ player, onLogout }) => {
 
     useEffect(() => {
         const fetchGames = async () => {
-            const res = await fetch('http://localhost:8080/api/games', { credentials: 'include' });
-            if (res.ok) {
-                const data = await res.json();
+            const response = await fetch('http://localhost:8080/api/games', { credentials: 'include' });
+            if (response.ok) {
+                const data = await response.json();
                 setGames(data.games);
             }
         };
@@ -24,21 +24,21 @@ export const GameList = ({ player, onLogout }) => {
 
     const handleJoinGame = async (gameId) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/game/${gameId}/players`, {
+            const response = await fetch(`http://localhost:8080/api/game/${gameId}/players`, {
                 method: 'POST',
                 credentials: 'include',
             });
 
-            if (!res.ok) {
-                const errorData = await res.json();
+            if (!response.ok) {
+                const errorData = await response.json();
                 alert(errorData.error || 'Failed to join game');
                 return;
             }
 
-            const data = await res.json();
+            const data = await response.json();
             navigate(`/game_view/${data.gpid}`);
-        } catch (err) {
-            alert('Network error: ' + err.message);
+        } catch (error) {
+            alert('Network error: ' + error.message);
         }
     };
 
@@ -56,15 +56,15 @@ export const GameList = ({ player, onLogout }) => {
                             <div className="game-info">
                                 {link ? (
                                     <Link to={link} className="game-link">
-                                        Game #{game.id} ({players})
+                                        Game #{game.id}: {players}
                                     </Link>
                                 ) : (
                                     <span className="game-link-nonclickable">
-                                        Game #{game.id} ({players})
+                                        Game #{game.id}: {players}
                                     </span>
                                 )}
                             </div>
-                            {!link && game.gamePlayers.length === 1 && (
+                            {!link && game.gamePlayers.length < 2 && (
                                 <button
                                     className="join-btn"
                                     onClick={() => handleJoinGame(game.id)}
