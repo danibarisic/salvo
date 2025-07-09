@@ -185,10 +185,10 @@ export const CreateGrid = ({ playerShips = [], opponentSalvoes = [], hitHistory 
                 <div key={letter} className="row">
                     <div className="cell header-cell">{letter}</div>
                     {numbers.map((n) => {
-                        const coord = `${letter}${n}`;
-                        const isShip = shipLocations.has(coord);
-                        const isHit = opponentSalvoes.includes(coord);
-                        const isSunk = sunkShips.has(coord);
+                        const coordinates = `${letter}${n}`;
+                        const isShip = shipLocations.has(coordinates);
+                        const isHit = opponentSalvoes.includes(coordinates);
+                        const isSunk = sunkShips.has(coordinates);
                         const isShipHit = isShip && isHit;
 
                         return (
@@ -202,9 +202,9 @@ export const CreateGrid = ({ playerShips = [], opponentSalvoes = [], hitHistory 
                 `}
                                 title={
                                     isSunk
-                                        ? `Sunk Ship: ${shipLocations.get(coord)}`
+                                        ? `Sunk Ship: ${shipLocations.get(coordinates)}`
                                         : isShipHit
-                                            ? `Hit Ship: ${shipLocations.get(coord)}`
+                                            ? `Hit Ship: ${shipLocations.get(coordinates)}`
                                             : isShip
                                                 ? 'Ship'
                                                 : isHit
