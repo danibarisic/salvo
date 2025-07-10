@@ -2,9 +2,6 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { ShipPlacer } from './ShipPlacer.jsx';
 import { SalvoPlacer } from './SalvoPlacer.jsx';
 
-// (CreateGrid and HitHistoryDisplay components remain the same as in your last provided code)
-// Make sure CreateGrid and HitHistoryDisplay are exported from this file
-// or imported if they are in separate files.
 export const CreateGrid = ({ playerShips = [], opponentSalvoes = [], hitHistory = [] }) => {
     const letters = 'ABCDEFGHIJ'.split('');
     const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
