@@ -375,7 +375,6 @@ h3 {
 
 .salvo-cell {
   background-color: #5f8bd2;
-  /* your base blue */
   border: 1px solid #3a5ca3;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -383,41 +382,41 @@ h3 {
 
 .salvo-cell.already-fired {
   background-color: #888;
-  /* gray for previously fired */
   cursor: not-allowed;
 }
 
 .salvo-cell.selected {
   background-color: #f57c00;
-  /* orange for selected shots */
   border: 2px solid #e65100;
 }
 
 .salvo-cell.hit-opponent-ship {
   background-color: #e53935;
-  /* Bright red */
   border: 2px solid #b71c1c;
-  /* Darker red border */
   box-shadow: 0 0 8px 2px rgba(229, 57, 53, 0.7);
   cursor: default;
-  /* No pointer to avoid confusion */
+}
+
+.sunk-ship-cell {
+  background-color: #333;
+  border: 2px solid #000;
+  opacity: 0.8;
+  text-decoration: line-through;
+  filter: grayscale(100%);
 }
 
 .hit-history {
-  background-color: #333;
-  /* Dark grey */
-  color: #eee;
-  /* Light text */
+  background-color: #f9f9f9;
+  color: #333;
   padding: 10px;
   border-radius: 6px;
   font-family: monospace;
   white-space: pre-wrap;
-  /* Preserve formatting */
   max-width: 400px;
   margin: 10px auto;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .hit-history-title {
-  color: white;
+  color: #333;
 }

@@ -254,13 +254,27 @@ public class SalvoController {
                     .body(Map.of("error", "User does not own this game player"));
         }
 
-        // Calculate the next turn count
-        int nextTurn = gamePlayer.getSalvoes().size() + 1;
+        // Check if opponent has placed ships
+        Game game = gamePlayer.getGame();
+        Optional<GamePlayer> opponentOpt = game.getGamePlayers().stream()
+                .filter(gp -> !gp.getId().equals(gamePlayer.getId()))
+                .findFirst();
 
-        // Check if the incoming salvo has a turnCount, ignore it and set server-side
+        if (opponentOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Cannot fire salvo — opponent not yet joined"));
+        }
+
+        GamePlayer opponent = opponentOpt.get();
+
+        if (opponent.getShips() == null || opponent.getShips().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Cannot fire salvo — opponent has not placed ships"));
+        }
+
+        int nextTurn = gamePlayer.getSalvoes().size() + 1;
         salvo.setTurnCount(nextTurn);
 
-        // Optional: double check if salvo for this turn already exists
         boolean turnExists = gamePlayer.getSalvoes().stream()
                 .anyMatch(s -> s.getTurnCount() == salvo.getTurnCount());
 

@@ -6,10 +6,11 @@ import { Login } from './components/login.jsx';
 import { GameList } from './components/gamesList.jsx';
 
 function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, setSalvoLocations }) {
-
   const { gpId } = useParams();
 
-  if (!player) return <Navigate to="/" replace />;
+  if (!player) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="game-layout">
@@ -19,7 +20,7 @@ function GameViewRoute({ player, playerShips, salvoLocations, setPlayerShips, se
         setPlayerShips={setPlayerShips}
         salvoLocations={salvoLocations}
         setSalvoLocations={setSalvoLocations}
-        user={player}  // Pass logged-in user here!
+        user={player}
       />
     </div>
   );
@@ -44,8 +45,10 @@ function App() {
         setUser(data);
       } else {
         setUser(null);
+        console.log('No current user or session expired.');
       }
     } catch (error) {
+      console.error(error);
       setUser(null);
     } finally {
       setLoadingUser(false);
@@ -63,13 +66,13 @@ function App() {
         credentials: 'include',
       });
       if (response.ok) {
-        await fetchCurrentPlayer();
+        await fetchCurrentPlayer(); // Re-fetch to confirm logged out state
         navigate('/');
       } else {
         console.error('Logout failed');
       }
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error(error);
     }
   };
 

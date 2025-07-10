@@ -132,8 +132,9 @@ public class GamePlayer {
                 .map(GamePlayer::makeGamePlayerDTO)
                 .collect(Collectors.toList()));
 
-        dto.put("ships", this.getShips()
+        dto.put("ships", this.getGame().getGamePlayers()
                 .stream()
+                .flatMap(gp -> gp.getShips().stream())
                 .map(ship -> Map.of(
                         "type", ship.getType(),
                         "locations", ship.getLocation(),
@@ -175,24 +176,31 @@ public class GamePlayer {
             return "place-ships";
         }
 
+        // If opponent hasn't joined OR opponent has joined but hasn't placed ships
         if (opponentOpt.isEmpty() || opponentOpt.get().getShips().isEmpty()) {
             return "wait";
         }
 
         GamePlayer opponent = opponentOpt.get();
 
-        if (allShipsSunk(this)) {
+        // 2. Check for game-over conditions
+        boolean currentPlayerShipsSunk = allShipsSunk(this);
+        boolean opponentPlayerShipsSunk = allShipsSunk(opponent);
+
+        // If both players' ships are sunk, it's a tie
+        if (currentPlayerShipsSunk && opponentPlayerShipsSunk) {
+            return "game-over-tied";
+        }
+        // If only current player's ships are sunk, current player lost
+        if (currentPlayerShipsSunk) {
             return "game-over-lost";
         }
-
-        if (allShipsSunk(opponent)) {
+        // If only opponent's ships are sunk, current player won
+        if (opponentPlayerShipsSunk) {
             return "game-over-won";
         }
 
-        if (allShipsSunk(this) && allShipsSunk(opponent)) {
-            return "game-over-tied";
-        }
-
+        // 3. If game is not over, determine whose turn it is
         int playerTurns = this.getSalvoes().size();
         int opponentTurns = opponent.getSalvoes().size();
 
@@ -206,31 +214,34 @@ public class GamePlayer {
     private int countShipsLeft(GamePlayer gp) {
         if (gp == null)
             return 0;
-        int totalShips = gp.getShips().size();
-        long sunkCount = gp.getShips()
+        // Count ships that are NOT sunk
+        long shipsAfloatCount = gp.getShips()
                 .stream()
-                .filter(this::isSunk)
+                .filter(ship -> !isSunk(ship, gp))
                 .count();
-        return totalShips - (int) sunkCount;
+        return (int) shipsAfloatCount;
     }
 
-    private boolean isSunk(Ship ship) {
-        // A ship is sunk if all its locations have been hit by opponent salvos
-        Optional<GamePlayer> opponentOpt = getOpponent();
-        if (opponentOpt.isEmpty())
+    private boolean isSunk(Ship ship, GamePlayer shipOwner) {
+        Optional<GamePlayer> opponentOpt = shipOwner.getOpponent();
+        if (opponentOpt.isEmpty()) {
             return false;
-        GamePlayer opponent = opponentOpt.get();
+        }
+        GamePlayer firingOpponent = opponentOpt.get();
 
-        Set<String> opponentHits = opponent.getSalvoes()
+        // Collect all salvo locations fired by the opponent
+        Set<String> opponentSalvoLocations = firingOpponent.getSalvoes()
                 .stream()
                 .flatMap(salvo -> salvo.getLocation().stream())
                 .collect(Collectors.toSet());
 
-        return opponentHits.containsAll(ship.getLocation());
+        // A ship is sunk if ALL its locations are present in the opponent's salvo
+        // locations
+        return opponentSalvoLocations.containsAll(ship.getLocation());
     }
 
     private boolean allShipsSunk(GamePlayer gp) {
-        return gp.getShips().stream().allMatch(this::isSunk);
+        return gp.getShips().stream().allMatch(ship -> isSunk(ship, gp));
     }
 
     public List<Map<String, Object>> buildHitHistory() {
@@ -241,19 +252,21 @@ public class GamePlayer {
             return hitHistory;
         GamePlayer opponent = opponentOpt.get();
 
-        List<String> opponentShipLocations = opponent.getShips()
+        // Get this player's ship locations (because opponent salvos hit *this* player's
+        // ships)
+        List<String> myShipLocations = this.getShips()
                 .stream()
                 .flatMap(ship -> ship.getLocation().stream())
                 .collect(Collectors.toList());
 
-        // Combine all salvos from opponent (which target this player)
+        // Combine all salvos from opponent
         List<Salvo> opponentSalvos = opponent.getSalvoes()
                 .stream()
                 .sorted(Comparator.comparingInt(Salvo::getTurnCount))
                 .collect(Collectors.toList());
 
         Set<String> allHitsSoFar = new HashSet<>();
-        Set<String> sunkShipsSoFar = new HashSet<>();
+        Set<String> sunkShipTypesSoFar = new HashSet<>();
 
         for (Salvo salvo : opponentSalvos) {
             Map<String, Object> turnReport = new LinkedHashMap<>();
@@ -261,24 +274,24 @@ public class GamePlayer {
 
             List<String> turnHits = salvoLocations
                     .stream()
-                    .filter(opponentShipLocations::contains)
+                    .filter(myShipLocations::contains)
                     .collect(Collectors.toList());
 
             allHitsSoFar.addAll(turnHits);
 
-            // Identify sunk ships this turn
-            List<String> sunkShipsThisTurn = opponent.getShips()
+            // Filter to only include types that were not already marked as sunk.
+            List<String> newlySunkShipsThisTurn = this.getShips()
                     .stream()
-                    .filter(ship -> allHitsSoFar.containsAll(ship.getLocation()))
+                    .filter(ship -> allHitsSoFar.containsAll(ship.getLocation())) // Check if this ship is now sunk
                     .map(Ship::getType)
-                    .filter(type -> !sunkShipsSoFar.contains(type))
+                    .filter(type -> !sunkShipTypesSoFar.contains(type))
                     .collect(Collectors.toList());
 
-            sunkShipsSoFar.addAll(sunkShipsThisTurn);
+            sunkShipTypesSoFar.addAll(newlySunkShipsThisTurn); // Add newly sunk ship types to cumulative set
 
             turnReport.put("turn", salvo.getTurnCount());
-            turnReport.put("hitsThisTurn", turnHits.isEmpty() ? List.of("None") : turnHits);
-            turnReport.put("sunkShips", sunkShipsThisTurn.isEmpty() ? List.of("None") : sunkShipsThisTurn);
+            turnReport.put("hitsThisTurn", turnHits.isEmpty() ? List.of() : turnHits);
+            turnReport.put("sunkShips", newlySunkShipsThisTurn.isEmpty() ? List.of() : newlySunkShipsThisTurn);
 
             List<String> cumulativeHits = new ArrayList<>(allHitsSoFar);
             cumulativeHits.sort(null);
