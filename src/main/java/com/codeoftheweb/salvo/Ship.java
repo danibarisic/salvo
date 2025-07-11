@@ -33,7 +33,7 @@ public class Ship {
 
     @ManyToOne
     @JoinColumn(name = "player_id")
-    private Player gamePlayers;
+    private Player player;
 
     public Ship() {
 
@@ -60,12 +60,12 @@ public class Ship {
         this.game = game;
     }
 
-    public Player getGamePlayers() {
-        return gamePlayers;
+    public Player getPlayer() {
+        return player;
     }
 
-    public void setGamePlayers(Player gamePlayers) {
-        this.gamePlayers = gamePlayers;
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     public List<String> getLocation() {
